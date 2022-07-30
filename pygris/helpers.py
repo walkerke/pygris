@@ -39,7 +39,7 @@ def load_tiger(url, cache = False):
 # %% ../nbs/00_helpers.ipynb 4
 import pandas as pd
 def fips_codes():
-    return pd.read_csv('fips_codes.csv', dtype = 'object')
+    return pd.read_csv('data/fips_codes.csv', dtype = 'object')
 
 # %% ../nbs/00_helpers.ipynb 5
 def validate_state(state):
