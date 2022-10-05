@@ -1,0 +1,6 @@
+geopandas>=0.9
+fiona
+pandas
+requests
+appdirs
+pip

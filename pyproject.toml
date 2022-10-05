@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pygris"
+version = "0.0.1"
+authors = [
+  { name="Kyle Walker", email="kyle@walker-data.com" },
+]
+license = {text = "MIT"}
+description = "Download and use US Census Bureau TIGER/Line Shapefiles and other data resources in Python"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[project.urls]
+"Homepage" = "https://github.com/walkerke/pygris"
+"Bug Tracker" = "https://github.com/walkerke/pygris/issues"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
