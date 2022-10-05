@@ -39,7 +39,7 @@ def fips_codes():
 
     return pd.read_csv(path, dtype = 'object')
 
-def validate_state(state):
+def validate_state(state, quiet = False):
     # Standardize as lowercase
     original_input = state
     state = state.lower()
@@ -65,8 +65,10 @@ def validate_state(state):
                 raise ValueError("You have likely entered an invalid state code, please revise.")
             else:
                 state_fips = state_sub.state_code.unique()[0]
-            
-                print(f"Using FIPS code '{state_fips}' for input '{original_input}'")
+                
+                if not quiet:
+                    print(f"Using FIPS code '{state_fips}' for input '{original_input}'")
+
                 return state_fips
         else:
             # If a state name, grab the appropriate info from fips_codes
@@ -77,12 +79,14 @@ def validate_state(state):
                 raise ValueError("You have likely entered an invalid state code, please revise.")
             else:
                 state_fips = state_sub.state_code.unique()[0]
-            
-                print(f"Using FIPS code '{state_fips}' for input '{original_input}'")
+
+                if not quiet:
+                    print(f"Using FIPS code '{state_fips}' for input '{original_input}'")
+                
                 return state_fips
             
 
-def validate_county(state, county):
+def validate_county(state, county, quiet = False):
     state = validate_state(state)
 
     fips = fips_codes()
@@ -108,13 +112,14 @@ def validate_county(state, county):
             raise ValueError("No county names match your input country string.")
         elif len(possible_counties) == 1:
 
-            cty_code = (fips
+            cty_code = (county_sub
                 .query('county == @possible_counties[0]')
                 .county_code
                 .unique()[0]
             )            
 
-            print(f"Using FIPS code '{cty_code}' for input '{county}'")
+            if not quiet:
+                print(f"Using FIPS code '{cty_code}' for input '{county}'")
 
             return cty_code
         else:

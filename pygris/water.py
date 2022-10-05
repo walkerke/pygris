@@ -7,9 +7,7 @@ def area_water(state, county, year = None, cache = False):
 
     state = validate_state(state)
 
-    if len(county) > 1:
-        if type(county) is not list:
-            county = [county]
+    if type(county) is list:
         valid_county = [validate_county(state, x) for x in county]
 
         county_water = []     
@@ -25,9 +23,9 @@ def area_water(state, county, year = None, cache = False):
 
 
     else:
-        valid_county = validate_county(county)
+        valid_county = validate_county(state, county)
     
-        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{county}_areawater.zip"
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{valid_county}_areawater.zip"
         w = load_tiger(url, cache = cache)
 
         return w
@@ -41,9 +39,7 @@ def linear_water(state, county, year = None, cache = False):
 
     state = validate_state(state)
 
-    if len(county) > 1:
-        if type(county) is not list:
-            county = [county]
+    if type(county) is list:
         valid_county = [validate_county(state, x) for x in county]
 
         county_water = []     
@@ -59,9 +55,9 @@ def linear_water(state, county, year = None, cache = False):
 
 
     else:
-        valid_county = validate_county(county)
+        valid_county = validate_county(state, county)
     
-        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{county}_linearwater.zip"
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{valid_county}_linearwater.zip"
         w = load_tiger(url, cache = cache)
 
         return w
