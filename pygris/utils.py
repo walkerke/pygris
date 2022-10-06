@@ -43,3 +43,4 @@ def erase_water(input, area_threshold = 0.75, year = None):
 
     return erased
 
+

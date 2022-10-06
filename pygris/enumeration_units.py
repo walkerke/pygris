@@ -3,8 +3,8 @@ import pandas as pd
 
 def counties(state = None, cb = False, resolution = '500k', year = None, cache = False):
     if year is None:
-        print("Using the default year of 2020")
-        year = 2020
+        print("Using the default year of 2021")
+        year = 2021
     
     if resolution not in ['500k', '5m', '20m']:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
@@ -41,8 +41,8 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
 
 def tracts(state = None, county = None, cb = False, year = None, cache = False):
     if year is None:
-        print("Using the default year of 2020")
-        year = 2020
+        print("Using the default year of 2021")
+        year = 2021
 
     if state is None:
         if year > 2018 and cb is True:
@@ -81,3 +81,35 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False):
         trcts = trcts.query('COUNTYFP in @valid_county')
 
     return trcts
+
+
+def school_districts(state = None, type = "unified", cb = False, year = None, cache = False):
+    if year is None:
+        print("Using the default year of 2021")
+        year = 2021
+
+    if state is None:
+        if year > 2018 and cb is True:
+            state = "us"
+            print("Retrieving school districts for the entire United States")
+        else:
+            raise ValueError("A state must be specified for this year/dataset combination.")
+    else:
+        state = validate_state(state)
+    
+    if type == "unified":
+        type = "unsd"
+    elif type == "elementary":
+        type = "elsd"
+    elif type == "secondary":
+        type = "scsd"
+    else:
+        raise ValueError("Invalid school district type.\nValid types are 'unified', 'elementary', and 'secondary'.")
+
+    if cb is True:
+        url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_{state}_{type}_500k.zip"
+    else:
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
+
+    
+    return load_tiger(url, cache = cache)

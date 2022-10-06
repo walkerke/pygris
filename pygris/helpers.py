@@ -4,7 +4,7 @@ import os
 import appdirs
 import pandas as pd
 import re
-from pygris.datasets import fips_path
+from pygris.internal_data import fips_path
 
 def load_tiger(url, cache = False):
 
