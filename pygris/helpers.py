@@ -10,7 +10,7 @@ def load_tiger(url, cache = False):
 
     if not cache:
         tiger_data = gp.read_file(url)
-        return(tiger_data)
+        return tiger_data
     else:
         cache_dir = appdirs.user_cache_dir("pygris")
 
@@ -32,7 +32,7 @@ def load_tiger(url, cache = False):
         # Now, read in the file from the cache directory
         tiger_data = gp.read_file(out_file)
 
-        return(tiger_data)         
+        return tiger_data         
 
 def fips_codes():
     path = fips_path()
