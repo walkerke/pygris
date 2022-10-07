@@ -3,7 +3,8 @@ import pandas as pd
 import appdirs
 import os
 
-def get_census(dataset, year, variables, params = {}):
+def get_census(dataset, variables, year = None, params = {}, 
+               return_geoid = False):
     endpoint = "https://api.census.gov/data"
 
     if type(variables) is not list:
@@ -13,15 +14,31 @@ def get_census(dataset, year, variables, params = {}):
 
     params.update({'get': joined_vars})
 
-    base = f"{endpoint}/{year}/{dataset}"
+    if year is None:
+        base = f"{endpoint}/{dataset}"
+    else:
+        base = f"{endpoint}/{year}/{dataset}"
 
     req = requests.get(url = base, params = params)
+
+    if req.status_code != 200:
+        raise SyntaxError(f"Request failed. The Census Bureau error message is {req.text}")
 
     out = pd.read_json(req.text)
 
     out.columns = out.iloc[0]
     out = out[1:]
-    
+
+    if return_geoid:
+        # find the columns that are not in variables
+        geoid_cols = list(out.columns)
+        for i in variables:
+            geoid_cols.remove(i)
+        
+        out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
+
+        out = out.drop(geoid_cols, axis = 1)
+
     return out
 
 

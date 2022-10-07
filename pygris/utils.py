@@ -2,7 +2,7 @@ from pygris.enumeration_units import counties
 from pygris.water import area_water
 import warnings
 import pandas as pd
-def erase_water(input, area_threshold = 0.75, year = None):
+def erase_water(input, area_threshold = 0.75, year = None, cache = False):
     if year is None:
         year = 2021
 
@@ -25,7 +25,7 @@ def erase_water(input, area_threshold = 0.75, year = None):
         state = i[0:2]
         county = i[2:]
 
-        water = area_water(state = state, county = county, year = year)
+        water = area_water(state = state, county = county, year = year, cache = cache)
 
         water_proj = water.to_crs(input.crs)
 
