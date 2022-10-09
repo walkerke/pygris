@@ -1,6 +1,7 @@
 geopandas>=0.9
 fiona
 pandas
+shapely
 requests
 appdirs
 pip
