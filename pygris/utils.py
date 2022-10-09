@@ -77,7 +77,7 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
 
     def place_geometry_wilke(geometry, position, centroid, scale = 1):
         diff = geometry.translate(xoff = -centroid.x, yoff = -centroid.y)
-        scaled = diff.scale(xfact = scale, yfact = scale)
+        scaled = diff.scale(xfact = scale, yfact = scale, origin = (centroid.x, centroid.y))
         return scaled.translate(xoff = position[0], yoff = position[1])
 
     bb = minimal_states.query('GEOID not in ["02", "15", "72"]', engine = "python").total_bounds
@@ -101,14 +101,14 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
             if position == "below":
                 ak_rescaled.geometry = place_geometry_wilke(
                     geometry = ak_rescaled.geometry,
-                    position = [bb[0] + 0.10 * (bb[2] - bb[0]), bb[1] + 0.15 * (bb[3] - bb[1])],
+                    position = [bb[0] + 0.08 * (bb[2] - bb[0]), bb[1] + 0.04 * (bb[3] - bb[1])],
                     scale = 0.5,
                     centroid = ak_centroid)
 
             elif position == "outside":
                 ak_rescaled.geometry = place_geometry_wilke(
                     geometry = ak_rescaled.geometry,
-                    position = [bb[0] - 0.08 * (bb[2] - bb[0]), bb[1] + 1.2 * (bb[3] - bb[1])],
+                    position = [bb[0] - 0.08 * (bb[2] - bb[0]), bb[1] + 0.8 * (bb[3] - bb[1])],
                     scale = 0.5,
                     centroid = ak_centroid)
             
