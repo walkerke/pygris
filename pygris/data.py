@@ -32,14 +32,20 @@ def get_census(dataset, variables, year = None, params = {},
 
     if return_geoid:
         # find the columns that are not in variables
-        geoid_cols = list(out.columns)
-        for i in variables:
-            geoid_cols.remove(i)
-        
-        # if 'time' is in geoid_cols, remove it as well
-        if "time" in geoid_cols:
-            geoid_cols.remove("time")
-        
+        my_cols = list(out.columns)
+
+        # if 'state' is not in the list of columns, don't assemble the GEOID; too much 
+        # ambiguity among possible combinations across the various endpoints
+        if "state" not in my_cols:
+            raise ValueError("`return_geoid` is not supported for this geography hierarchy.")
+
+        # Identify the position of the state column in my_cols, and 
+        # extract all the columns that follow it
+        state_ix = my_cols.index("state")
+
+        geoid_cols = my_cols[state_ix:]
+       
+        # Assemble the GEOID column, then remove its constituent parts
         out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
 
         out = out.drop(geoid_cols, axis = 1)
