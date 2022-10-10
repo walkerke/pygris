@@ -90,7 +90,7 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
 
     if pd.concat([us_alaska, us_hawaii, us_puerto_rico]).shape[0] == 0:
         UserWarning("None of your features are in Alaska, Hawaii, or Puerto Rico, so no geometries will be shifted.\nTransforming your object's CRS to 'ESRI:102003'")
-        return input_albers.drop('state_fips', axis = 1)
+        return input_albers.drop(['state_fips', 'index_right'], axis = 1)
     
     shapes_list = [us_lower48]
 
@@ -157,7 +157,7 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
 
             shapes_list.append(pr_rescaled)
         
-        output_data = pd.concat(shapes_list).drop('state_fips', axis = 1)
+        output_data = pd.concat(shapes_list).drop(['state_fips', 'index_right'], axis = 1)
 
         return output_data
 
@@ -223,6 +223,6 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
 
             shapes_list.append(pr_rescaled)
         
-        output_data = pd.concat(shapes_list).drop('state_fips', axis = 1)
+        output_data = pd.concat(shapes_list).drop(['state_fips', 'index_right'], axis = 1)
 
         return output_data
