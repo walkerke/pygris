@@ -101,14 +101,14 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
             if position == "below":
                 ak_rescaled.geometry = place_geometry_wilke(
                     geometry = ak_rescaled.geometry,
-                    position = [bb[0] + 0.08 * (bb[2] - bb[0]), bb[1] + 0.04 * (bb[3] - bb[1])],
+                    position = [bb[0] + 0.06 * (bb[2] - bb[0]), bb[1] - 0.14 * (bb[3] - bb[1])],
                     scale = 0.5,
                     centroid = ak_centroid)
 
             elif position == "outside":
                 ak_rescaled.geometry = place_geometry_wilke(
                     geometry = ak_rescaled.geometry,
-                    position = [bb[0] - 0.08 * (bb[2] - bb[0]), bb[1] + 0.8 * (bb[3] - bb[1])],
+                    position = [bb[0] - 0.08 * (bb[2] - bb[0]), bb[1] + 0.92 * (bb[3] - bb[1])],
                     scale = 0.5,
                     centroid = ak_centroid)
             
@@ -123,13 +123,13 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
             if position == "below":
                 hi_rescaled.geometry = place_geometry_wilke(
                     geometry = hi_rescaled.geometry,
-                    position = [bb[0] + 0.35 * (bb[2] - bb[0]), bb[1] + 0.0 * (bb[3] - bb[1])],
+                    position = [bb[0] + 0.32 * (bb[2] - bb[0]), bb[1] + 0.2 * (bb[3] - bb[1])],
                     scale = 1.5,
                     centroid = hi_centroid)
             elif position == "outside":
                 hi_rescaled.geometry = place_geometry_wilke(
                     geometry = hi_rescaled.geometry,
-                    position = [bb[0] - 0.0 * (bb[2] - bb[0]), bb[1] + 0.2 * (bb[3] - bb[1])],
+                    position = [bb[0] + 0.05 * (bb[2] - bb[0]), bb[1] + 0.35 * (bb[3] - bb[1])],
                     scale = 1.5,
                     centroid = hi_centroid)
             
@@ -143,13 +143,13 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
             if position == "below":
                 pr_rescaled.geometry = place_geometry_wilke(
                     geometry = pr_rescaled.geometry,
-                    position = [bb[0] + 0.65 * (bb[2] - bb[0]), bb[1] + 0.0 * (bb[3] - bb[1])],
+                    position = [bb[0] + 0.75 * (bb[2] - bb[0]), bb[1] + 0.15 * (bb[3] - bb[1])],
                     scale = 2.5,
                     centroid = pr_centroid)
             elif position == "outside":
                 pr_rescaled.geometry = place_geometry_wilke(
                     geometry = pr_rescaled.geometry,
-                    position = [bb[0] + 0.95 * (bb[2] - bb[0]), bb[1] - 0.05 * (bb[3] - bb[1])],
+                    position = [bb[0] + 1.0 * (bb[2] - bb[0]), bb[1] + 0.05 * (bb[3] - bb[1])],
                     scale = 2.5,
                     centroid = pr_centroid)
             
@@ -210,7 +210,7 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
                 pr_rescaled.geometry = place_geometry_wilke(
                     geometry = pr_rescaled.geometry,
                     position = [bb[0] + 0.75 * (bb[2] - bb[0]), bb[1] - 0.1 * (bb[3] - bb[1])],
-                    scale = 2,
+                    scale = 1,
                     centroid = pr_centroid)
             elif position == "outside":
                 pr_rescaled.geometry = place_geometry_wilke(
