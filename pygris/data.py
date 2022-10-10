@@ -4,7 +4,7 @@ import appdirs
 import os
 
 def get_census(dataset, variables, year = None, params = {}, 
-               return_geoid = False):
+               return_geoid = False, guess_dtypes = False):
     endpoint = "https://api.census.gov/data"
 
     if type(variables) is not list:
@@ -24,6 +24,7 @@ def get_census(dataset, variables, year = None, params = {},
     if req.status_code != 200:
         raise SyntaxError(f"Request failed. The Census Bureau error message is {req.text}")
 
+    
     out = pd.read_json(req.text)
 
     out.columns = out.iloc[0]
@@ -38,6 +39,23 @@ def get_census(dataset, variables, year = None, params = {},
         out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
 
         out = out.drop(geoid_cols, axis = 1)
+    
+    if guess_dtypes:
+        num_list = []
+        # Iterate through the columns in variables and try to guess if they should be converted
+        for v in variables:
+            check = pd.to_numeric(out[v], errors = "coerce")
+            # If the columns aren't null, flag as numeric
+            if not pd.isnull(check.unique())[0]:
+                num_list.append(v)
+        
+        # Now, convert the columns in num_list to numeric
+        out[num_list] = out[num_list].astype(float)
+
+        # If we are guessing numerics, we should convert NAs (negatives below -1 million)
+        # to NaN. Users who want to keep the codes should keep as object and handle
+        # themselves.
+        out[num_list] = out[num_list].where(out[num_list] > -999999)
 
     return out
 
