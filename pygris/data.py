@@ -36,6 +36,10 @@ def get_census(dataset, variables, year = None, params = {},
         for i in variables:
             geoid_cols.remove(i)
         
+        # if 'time' is in geoid_cols, remove it as well
+        if "time" in geoid_cols:
+            geoid_cols.remove("time")
+        
         out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
 
         out = out.drop(geoid_cols, axis = 1)
@@ -45,12 +49,10 @@ def get_census(dataset, variables, year = None, params = {},
         # Iterate through the columns in variables and try to guess if they should be converted
         for v in variables:
             check = pd.to_numeric(out[v], errors = "coerce")
-            # If the columns aren't null, flag as numeric
+            # If the columns aren't fully null, convert to numeric, taking care of any oddities
             if not pd.isnull(check.unique())[0]:
+                out[v] = check
                 num_list.append(v)
-        
-        # Now, convert the columns in num_list to numeric
-        out[num_list] = out[num_list].astype(float)
 
         # If we are guessing numerics, we should convert NAs (negatives below -1 million)
         # to NaN. Users who want to keep the codes should keep as object and handle
