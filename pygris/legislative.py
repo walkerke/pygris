@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from pygris.helpers import load_tiger, validate_state
+from pygris.helpers import load_tiger, validate_state, validate_county
 
 def congressional_districts(state = None, cb = False, resolution = "500k", year = None,
                             cache = False):
@@ -90,7 +90,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
 def state_legislative_districts(state = None, house = "upper", cb = False,
                                 year = None, cache = False):
     """
-    Load a congressional districts shapefile into Python as a GeoDataFrame
+    Load a state legislative districts shapefile into Python as a GeoDataFrame
 
     Parameters
     ----------
@@ -167,4 +167,79 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
     return stateleg
 
     
+def voting_districts(state = None, county = None, cb = False,
+                     year = 2020, cache = False):
+    """
+     Load a voting districts shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+           If None, voting districts for the entire United States
+           will be downloaded when cb is True and the year is 2020.  
+
+    county: The county name or three-digit FIPS code of the desired county. If None, voting
+            districts for the selected state will be downloaded. 
+
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    year: The year of the TIGER/Line or cartographic boundary shapefile. Available years 
+          for voting districts are 2020 (for 2020 districts) and 2012 (for 2010 districts).
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of voting districts.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch14GARM.pdf for more information.    
     
+    
+    """
+    
+    if year != 2020 and cb:
+        raise ValueError("Cartographic boundary voting district files are only available for 2020.")
+    
+    if state is None:
+        if year > 2018 and cb:
+            state = "us"
+            print("Retrieving voting districts for the entire United States")
+        else:
+            raise ValueError("A state must be specified for this year/dataset combination.")
+    else:
+        state = validate_state(state)
+    
+
+    if cb:
+        url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
+
+        vtds = load_tiger(url, cache = cache)
+
+        if county is None:
+            return vtds
+        else:
+            if type(county) is not list:
+                county = [county]
+                valid_county = [validate_county(state, x) for x in county]
+                vtds = vtds.query('COUNTYFP20 in @valid_county')
+            
+            return vtds
+    else:
+        if year == 2012:
+            url = f"https://www2.census.gov/geo/tiger/TIGER2012/VTD/tl_2012_{state}_vtd10.zip"
+        else:
+            if county is not None:
+                county = validate_county(state, county)
+                url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}{county}_vtd20.zip"
+            else:
+                url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
+        
+        vtds = load_tiger(url, cache = cache)
+
+        return vtds
