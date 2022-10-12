@@ -6,6 +6,40 @@ from .helpers import load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 
 def counties(state = None, cb = False, resolution = '500k', year = None, cache = False):
+    """
+    Load a counties shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+           If None (the default), counties for the entire United States
+           will be downloaded.  
+
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    resolution: The resolution of the cartographic boundary file; only applies if 
+                the cb argument is set to True. The default is "500k"; options also
+                include "5m" (1:5 million) and "20m" (1:20 million)
+    
+    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+          defaults to 2021.
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of counties.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more information. 
+
+
+    """
     if year is None:
         print("Using the default year of 2021")
         year = 2021
@@ -44,6 +78,38 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
     return ctys
 
 def tracts(state = None, county = None, cb = False, year = None, cache = False):
+    """
+     Load a Census tracts shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+           If None, Census tracts for the entire United States
+           will be downloaded when cb is True and the year is 2020.  
+
+    county: The county name or three-digit FIPS code of the desired county. If None, voting
+            districts for the selected state will be downloaded. 
+
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    year: The year of the TIGER/Line or cartographic boundary shapefile. 
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of Census tracts.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more information.    
+    
+    
+    """
     if year is None:
         print("Using the default year of 2021")
         year = 2021
@@ -87,7 +153,115 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False):
     return trcts
 
 
+def block_groups(state = None, county = None, cb = False, year = None, cache = False):
+    """
+     Load a Census block groups shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+           If None, Census block groups for the entire United States
+           will be downloaded when cb is True and the year is 2020.  
+
+    county: The county name or three-digit FIPS code of the desired county. If None, voting
+            districts for the selected state will be downloaded. 
+
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    year: The year of the TIGER/Line or cartographic boundary shapefile. 
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of Census block groups.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more information.    
+    
+    
+    """
+    if year is None:
+        print("Using the default year of 2021")
+        year = 2021
+
+    if state is None:
+        if year > 2018 and cb is True:
+            state = 'us'
+            print("Retrieving Census block groups for the entire United States")
+        else:
+            raise ValueError("A state is required for this year/dataset combination.")
+    else:
+        state = validate_state(state)
+    
+    if cb is True:
+        if year in [1990, 2000]:
+            suf = str(year)[2:]
+            url = f"https://www2.census.gov/geo/tiger/PREVGENZ/bg/bg{suf}shp/bg{state}_d{suf}_shp.zip"
+        elif year == 2010:
+            url = f"https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_{state}_150_00_500k.zip"
+        elif year > 2013:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_{state}_bg_500k.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/cb_{year}_{state}_bg_500k.zip"
+    else:
+        if year == 1990:
+            raise ValueError("Please specify `cb = True` to get 1990 data.")
+        elif year in [2000, 2010]:
+            suf = str(year)[2:]
+            url = f"https://www2.census.gov/geo/tiger/TIGER2010/BG/{year}/tl_2010_{state}_bg{suf}.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/TIGER{year}/BG/tl_{year}_{state}_bg.zip"
+
+    bgs = load_tiger(url, cache = cache)
+
+    if county is not None:
+        if type(county) is not list:
+            county = [county]
+        valid_county = [validate_county(state, x) for x in county]
+        bgs = bgs.query('COUNTYFP in @valid_county')
+
+    return bgs
+
+
 def school_districts(state = None, type = "unified", cb = False, year = None, cache = False):
+    """
+    Load a school districts shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+           If None, school districts for the entire United States
+           will be downloaded when cb is True and the year is 2019 or later.  
+
+    type: One of "unified", "elementary", or "secondary".  
+
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+          defaults to 2021.
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of school district boundaries.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information. 
+
+
+    """
     if year is None:
         print("Using the default year of 2021")
         year = 2021
@@ -120,6 +294,36 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
 
 
 def states(cb = True, resolution = "500k", year = None, cache = False):
+    """
+    Load a states shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    resolution: The resolution of the cartographic boundary file; only applies if 
+                the cb argument is set to True. The default is "500k"; options also
+                include "5m" (1:5 million) and "20m" (1:20 million)
+    
+    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+          defaults to 2021.
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of states.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more information. 
+
+
+    """
 
     if resolution not in ["500k", "5m", "20m"]:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
