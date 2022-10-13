@@ -40,15 +40,15 @@ def regions(resolution = "500k", year = None, cache = False):
     return rgns
 
 
-def nation(resolution = "500k", year = None, cache = False):
+def nation(resolution = "5m", year = None, cache = False):
     """
     Load a US national boundary shapefile into Python as a GeoDataFrame
 
     Parameters
     ----------
     resolution: The resolution of the cartographic boundary file; only applies if 
-                the cb argument is set to True. The default is "500k"; options also
-                include "5m" (1:5 million) and "20m" (1:20 million)
+                the cb argument is set to True. The default is "5m" (1:5 million);
+                "20m" (1:20 million) is also available.
     
     year: The year of the cartographic boundary shapefile. If not specified,
           defaults to 2021.
@@ -66,7 +66,7 @@ def nation(resolution = "500k", year = None, cache = False):
         year = 2021
         print(f"Using the default year of {year}")
     
-    if resolution not in ["500k", "5m", "20m"]:
+    if resolution not in ["5m", "20m"]:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
 
     url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_nation_{resolution}.zip"
