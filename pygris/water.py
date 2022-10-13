@@ -61,3 +61,15 @@ def linear_water(state, county, year = None, cache = False):
         w = load_tiger(url, cache = cache)
 
         return w
+
+def coastline(year = None, cache = False):
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+
+    if year > 2016:
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COASTLINE/tl_{year}_us_coastline.zip"
+    else:
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COAST/tl_{year}_us_coastline.zip"
+    
+    return load_tiger(url, cache = cache)
