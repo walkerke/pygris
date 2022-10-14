@@ -5,3 +5,4 @@ from .transportation import *
 from .native import *
 from .legislative import *
 from .national import *
+from .metro_areas import *
