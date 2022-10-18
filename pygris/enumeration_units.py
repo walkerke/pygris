@@ -510,3 +510,137 @@ def places(state = None, cb = False, year = None, cache = False):
     return load_tiger(url, cache = cache)
 
 
+def zctas(cb = False, starts_with = None, year = None, state = None, cache = False, subset_by = None):
+
+    """
+    Load a zip code tabulation areas (ZCTAs) shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    cb : bool
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    starts_with : str or list
+        A string (or list of strings) representing the beginning characters of the 
+        ZCTAs to be returned by the function.  
+
+    year : int
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
+
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None (the default), ZCTAs for the entire United States
+        will be downloaded if available for that year / dataset combination.  
+
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of zip code tabulation areas.
+
+
+    Notes
+    ----------   
+    ZCTAs are approximations of zip codes, which themselves are not formally defined as areas
+    by the United States Postal Service.  In turn, not all zip codes will have corresponding 
+    ZCTAs.  For these reasons, ZCTAs are not recommended for spatial analysis and should 
+    be used with appropriate caution.  
+
+    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html for more information. 
+
+    """
+
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+    
+    if state is not None and year > 2010:
+        raise ValueError("ZCTAs are only available by state for 2000 and 2010.")
+    
+    if state is not None and year == 2010 and cb:
+        raise ValueError("ZCTAs are only available by state for 2010 when cb = FALSE.")
+    
+    if year == 1990:
+        raise ValueError("Zip Code Tabulation Areas are only available beginning with the 2000 Census.")
+    
+    if state is not None:
+        state = validate_state(state)
+    
+    if not cache:
+        Warning("ZCTAs can take several minutes to download.\nTo cache the data and avoid re-downloading in future sessions, use the argument `cache = True`.")
+    
+
+    if cb:
+        if year == 2000:
+            if state is None:
+                url = "https://www2.census.gov/geo/tiger/PREVGENZ/zt/z500shp/zt99_d00_shp.zip"
+            else:
+                url = f"https://www2.census.gov/geo/tiger/PREVGENZ/zt/z500shp/zt{state}_d00_shp.zip"
+        elif year == 2010:
+            url = "https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_us_860_00_500k.zip"
+        elif year >= 2020:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_zcta520_500k.zip"
+        else:
+            if year == 2013:
+                url = f"https://www2.census.gov/geo/tiger/GENZ{year}/cb_{year}_us_zcta510_500k.zip"
+            else:
+                url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_zcta510_500k.zip"
+    else:
+        if year >= 2020:
+            url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ZCTA520/tl_{year}_us_zcta520.zip"
+        else:
+            if year in [2000, 2010]:
+                suf = str(year)[2:]
+
+                if state is None:
+                    url = f"https://www2.census.gov/geo/tiger/TIGER2010/ZCTA5/{year}/tl_2010_us_zcta5{suf}.zip"
+                else:
+                    url = f"https://www2.census.gov/geo/tiger/TIGER2010/ZCTA5/{year}/tl_2010_{state}_zcta5{suf}.zip"
+            else:
+                url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ZCTA5/tl_{year}_us_zcta510.zip"
+    
+    zcta = load_tiger(url, cache = cache, subset_by = subset_by)
+
+    if starts_with is not None:
+        cols = zcta.columns.tolist()
+
+        zcta_ix = [i for i, j in enumerate(cols) if j.startswith("ZCTA")][0]
+
+        zcta_col = cols[zcta_ix]
+
+        if type(starts_with) is not list:
+            zcta_sub = zcta.loc[zcta[zcta_col].str.startswith(expr)]
+        else:
+            tmp = ["^" + i for i in starts_with]
+            expr = "|".join(tmp)
+            zcta_sub = zcta.loc[zcta[zcta_col].str.contains(expr)]        
+
+        return zcta_sub
+    
+    else:
+        return zcta
+        
+
+
+

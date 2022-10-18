@@ -156,3 +156,112 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CSA/tl_{year}_us_csa.zip"
     
     return load_tiger(url, cache = cache)
+
+
+def metro_divisions(cb = False, resolution = "500k", year = None, cache = False):
+    """
+    Load a metropolitan divisions shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    resolution: The resolution of the cartographic boundary file; only applies if 
+                the cb argument is set to True. The default is "500k"; options also
+                include "5m" (1:5 million) and "20m" (1:20 million)
+    
+    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+          defaults to 2021.
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of metropolitan divisions
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information. 
+
+
+    """
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+    
+    if resolution not in ["500k", "5m", "20m"]:
+        raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
+
+    if year == 2022:
+        raise ValueError("Metropolitan divisions for 2022 are not yet defined due to the re-organization of counties in Connecticut.")
+    
+    if cb:
+        if year == 2013:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/cb_{year}_us_metdiv_{resolution}.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_metdiv_{resolution}.zip"
+    else:
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CBSA/tl_{year}_us_metdiv.zip"
+    
+    return load_tiger(url, cache = cache)
+
+
+def new_england(type = "necta", cb = False, year = None, cache = False):
+    """
+    Load a metropolitan divisions shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    resolution: The resolution of the cartographic boundary file; only applies if 
+                the cb argument is set to True. The default is "500k"; options also
+                include "5m" (1:5 million) and "20m" (1:20 million)
+    
+    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+          defaults to 2021.
+
+    cache: If True, the function will download a Census shapefile to a cache directory 
+           on the user's computer for future access.  If False, the function will load
+           the shapefile directly from the Census website.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of metropolitan divisions
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information. 
+
+
+    """
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+    
+    if type == "necta":
+        if cb:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_necta_500k.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTA/tl_{year}_us_necta.zip"
+
+        return load_tiger(url, cache = cache)
+
+    elif type == "combined":
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CNECTA/tl_{year}_us_cnecta.zip"
+
+        return load_tiger(url, cache = cache)
+
+    elif type == "divisions":
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTADIV/tl_{year}_us_nectadiv.zip"
+
+        return load_tiger(url, cache = cache)
+
+    else:
+        raise ValueError("Invalid NECTA type; valid values include 'necta' (the default), 'combined', and 'divisions'.")

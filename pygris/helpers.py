@@ -6,10 +6,27 @@ import pandas as pd
 import re
 from pygris.internal_data import fips_path
 
-def load_tiger(url, cache = False):
+def load_tiger(url, cache = False, subset_by = None):
+
+    # Parse the subset_by argument to figure out what it should represent
+    # If subset_by is a tuple, it becomes bbox
+    if subset_by is not None:
+        if type(subset_by) is tuple:
+            sub = {"bbox": subset_by}
+        # If subset_by is an integer or slice, it becomes rows
+        elif type(subset_by) is int or type(subset_by) is slice:
+            sub = {"rows": subset_by}
+        # If subset_by is a GeoDataFrame or GeoSeries, use mask
+        # CRS conflicts should be resolved internally by geopandas
+        elif type(subset_by) is gp.GeoDataFrame or type(subset_by) is gp.GeoSeries:
+            sub = {"mask": subset_by}
 
     if not cache:
-        tiger_data = gp.read_file(url)
+        if subset_by is not None:
+            tiger_data = gp.read_file(url, **sub)
+        else:
+            tiger_data = gp.read_file(url)
+
         return tiger_data
     else:
         cache_dir = appdirs.user_cache_dir("pygris")
@@ -30,7 +47,10 @@ def load_tiger(url, cache = False):
                 fd.write(req.content)
         
         # Now, read in the file from the cache directory
-        tiger_data = gp.read_file(out_file)
+        if subset_by is not None:
+            tiger_data = gp.read_file(out_file, **sub)
+        else:
+            tiger_data = gp.read_file(out_file)
 
         return tiger_data         
 
