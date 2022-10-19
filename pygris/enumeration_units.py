@@ -64,40 +64,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
     if year is None:
         print("Using the default year of 2021")
         year = 2021
-    """
-    Load a counties shapefile into Python as a GeoDataFrame
-
-    Parameters
-    ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None (the default), counties for the entire United States
-           will be downloaded.  
-
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
-        Defaults to False (the regular TIGER/Line file).
-
-    resolution: The resolution of the cartographic boundary file; only applies if 
-                the cb argument is set to True. The default is "500k"; options also
-                include "5m" (1:5 million) and "20m" (1:20 million)
     
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
-
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
-
-    Returns
-    ----------
-    geopandas.GeoDataFrame: A GeoDataFrame of counties.
-
-
-    Notes
-    ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more information. 
-
-
-    """
     if resolution not in ['500k', '5m', '20m']:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
     
