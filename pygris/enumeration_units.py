@@ -829,6 +829,8 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
 
 def county_subdivisions(state, county = None, cb = False, year = None, cache = False, subset_by = None):
     """
+    Load a county subdivisions shapefile into Python as a GeoDataFrame
+
     Parameters
     ----------
     state : str 

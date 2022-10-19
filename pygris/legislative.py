@@ -5,30 +5,51 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 from pygris.helpers import load_tiger, validate_state, validate_county
 
 def congressional_districts(state = None, cb = False, resolution = "500k", year = None,
-                            cache = False):
+                            cache = False, subset_by = None):
 
     """
     Load a congressional districts shapefile into Python as a GeoDataFrame
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None (the default), congressional districts for the entire United States
-           will be downloaded.  
+    state : str 
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None (the default), congressional districts for the entire United States
+        will be downloaded.  
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
 
-    resolution: The resolution of the cartographic boundary file; only applies if 
-                the cb argument is set to True. The default is "500k"; options also
-                include "5m" (1:5 million) and "20m" (1:20 million)
+    resolution : str 
+        The resolution of the cartographic boundary file; only applies if 
+        the cb argument is set to True. The default is "500k"; options also
+        include "5m" (1:5 million) and "20m" (1:20 million)
     
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+    
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
 
     Returns
     ----------
@@ -76,7 +97,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_us_cd{congress}.zip"
     
 
-    cds = load_tiger(url, cache = cache)
+    cds = load_tiger(url, cache = cache, subset_by = subset_by)
 
     if state is not None:
         if type(state) is not list:
@@ -88,28 +109,49 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         
 
 def state_legislative_districts(state = None, house = "upper", cb = False,
-                                year = None, cache = False):
+                                year = None, cache = False, subset_by = None):
     """
     Load a state legislative districts shapefile into Python as a GeoDataFrame
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None, state legislative districts for the entire United States
-           will be downloaded when cb is True and the year is 2019 or later.  
+    state : str 
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None, state legislative districts for the entire United States
+        will be downloaded when cb is True and the year is 2019 or later.  
 
-    house: Specify here whether you want boundaries for the "upper" or "lower" house. 
-           Note: Nebraska has a unicameral legislature, so only "upper" will work for Nebraska.
+    house : str 
+        Specify here whether you want boundaries for the "upper" or "lower" house. 
+        Note: Nebraska has a unicameral legislature, so only "upper" will work for Nebraska.
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
 
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
 
     Returns
     ----------
@@ -162,34 +204,55 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
-    stateleg = load_tiger(url, cache = cache)
+    stateleg = load_tiger(url, cache = cache, subset_by = subset_by)
 
     return stateleg
 
     
 def voting_districts(state = None, county = None, cb = False,
-                     year = 2020, cache = False):
+                     year = 2020, cache = False, subset_by = None):
     """
      Load a voting districts shapefile into Python as a GeoDataFrame
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None, voting districts for the entire United States
-           will be downloaded when cb is True and the year is 2020.  
+    state : str 
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None, voting districts for the entire United States
+        will be downloaded when cb is True and the year is 2020.  
 
-    county: The county name or three-digit FIPS code of the desired county. If None, voting
-            districts for the selected state will be downloaded. 
+    county : str 
+        The county name or three-digit FIPS code of the desired county. If None, voting
+        districts for the selected state will be downloaded. 
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
 
-    year: The year of the TIGER/Line or cartographic boundary shapefile. Available years 
-          for voting districts are 2020 (for 2020 districts) and 2012 (for 2010 districts).
+    year : int
+        The year of the TIGER/Line or cartographic boundary shapefile. Available years 
+        for voting districts are 2020 (for 2020 districts) and 2012 (for 2010 districts).
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+    
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
 
     Returns
     ----------
@@ -219,7 +282,7 @@ def voting_districts(state = None, county = None, cb = False,
     if cb:
         url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
 
-        vtds = load_tiger(url, cache = cache)
+        vtds = load_tiger(url, cache = cache, subset_by = subset_by)
 
         if county is None:
             return vtds
@@ -240,6 +303,6 @@ def voting_districts(state = None, county = None, cb = False,
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
         
-        vtds = load_tiger(url, cache = cache)
+        vtds = load_tiger(url, cache = cache, subset_by = subset_by)
 
         return vtds
