@@ -298,22 +298,26 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None, school districts for the entire United States
-           will be downloaded when cb is True and the year is 2019 or later.  
+    state : str 
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None, Census tracts for the entire United States
+        will be downloaded when cb is True and the year is 2020.  
 
-    type: One of "unified", "elementary", or "secondary".  
+    type : str 
+        One of "unified", "elementary", or "secondary".  
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
 
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. 
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
-
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+    
     subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
@@ -321,10 +325,8 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
             - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             - If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             - If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
@@ -378,19 +380,23 @@ def states(cb = True, resolution = "500k", year = None, cache = False):
 
     Parameters
     ----------
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
 
-    resolution: The resolution of the cartographic boundary file; only applies if 
-                the cb argument is set to True. The default is "500k"; options also
-                include "5m" (1:5 million) and "20m" (1:20 million)
+    resolution : str 
+        The resolution of the cartographic boundary file; only applies if 
+        the cb argument is set to True. The default is "500k"; options also
+        include "5m" (1:5 million) and "20m" (1:20 million)
     
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
 
     Returns
     ----------
@@ -439,19 +445,23 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None (the default), PUMAs for the entire United States
-           will be downloaded.  
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None, PUMAs for the entire United States
+        will be downloaded if available for that dataset / year combination.  
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
   
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
     
     subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
@@ -526,19 +536,23 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
 
     Parameters
     ----------
-    state: The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-           If None (the default), places for the entire United States
-           will be downloaded if available for that year / dataset combination.  
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None (the default), places for the entire United States
+        will be downloaded.  
 
-    cb: If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-  
-    year: The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-          defaults to 2021.
+ 
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
+        defaults to 2021.
 
-    cache: If True, the function will download a Census shapefile to a cache directory 
-           on the user's computer for future access.  If False, the function will load
-           the shapefile directly from the Census website.  
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
     
     subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
@@ -720,5 +734,96 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
         return zcta
         
 
+def blocks(state, county = None, year = None, cache = False, subset_by = None):
+    """
+     Load a Census blocks shapefile into Python as a GeoDataFrame
+
+    Parameters
+    ----------
+    state : str, required
+        The state name, state abbreviation, or two-digit FIPS code of the desired state.
+
+    county : str
+        The county name or three-digit FIPS code of the desired county. If None, blocks
+        for the selected state will be downloaded. 
+
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. 
+
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+    
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
+    
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of Census blocks.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information.    
+    
+    
+    """
+
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+
+    if year == 1990:
+        raise ValueError("Block files are not available for 1990.")
+
+    state = validate_state(state)
+
+    if not cache:
+        Warning("Block shapefiles can take several minutes to download.\nConsider using `cache = True` to store block shapefiles\nin a local cache and avoid future downloads.")
+
+    if year in [2000, 2010]:
+        suf = str(year)[2:]
+        if county is not None:
+            county = validate_county(state, county)
+        
+            url = f"https://www2.census.gov/geo/tiger/TIGER2010/TABBLOCK/{year}/tl_2010_{state}{county}_tabblock{suf}.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/TIGER2010/TABBLOCK/{year}/tl_2010_{state}_tabblock{suf}.zip"
+    elif year in range(2011, 2014):
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK/tl_{year}_{state}_tabblock.zip"
+    elif year in range(2014, 2020):
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK/tl_{year}_{state}_tabblock10.zip"
+    else:
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK20/tl_{year}_{state}_tabblock20.zip"
+
+    blks = load_tiger(url, cache = cache, subset_by = subset_by)
+
+    if county is not None and year > 2010:
+        if year > 2019:
+            if type(county) is not list:
+                county = [county]
+            valid_county = [validate_county(state, x) for x in county]
+            blks = blks.query('COUNTYFP20 in @valid_county')
+        else:
+            if type(county) is not list:
+                county = [county]
+            valid_county = [validate_county(state, x) for x in county]
+            blks = blks.query('COUNTYFP10 in @valid_county')
+    
+    return blks
 
 
