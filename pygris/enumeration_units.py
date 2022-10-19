@@ -106,8 +106,8 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
     ----------
     state : str 
         The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-        If None, Census tracts for the entire United States
-        will be downloaded when cb is True and the year is 2020.  
+        If None, Census tracts for the entire United States will be downloaded if available for that 
+        year / dataset combination.  
 
     county : str
         The county name or three-digit FIPS code of the desired county. If None, Census tracts
@@ -203,8 +203,8 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
     ----------
     state : str 
         The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-        If None, Census tracts for the entire United States
-        will be downloaded when cb is True and the year is 2020.  
+        If None, block groups for the entire United States will be downloaded if 
+        available for that year / dataset combination.  
 
     county : str
         The county name or three-digit FIPS code of the desired county. If None, block groups
@@ -300,8 +300,8 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
     ----------
     state : str 
         The state name, state abbreviation, or two-digit FIPS code of the desired state. 
-        If None, Census tracts for the entire United States
-        will be downloaded when cb is True and the year is 2020.  
+        If None, school districts for the entire United States will be downloaded 
+        if available for that year / dataset combination.   
 
     type : str 
         One of "unified", "elementary", or "secondary".  
@@ -539,7 +539,7 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
     state : str
         The state name, state abbreviation, or two-digit FIPS code of the desired state. 
         If None (the default), places for the entire United States
-        will be downloaded.  
+        will be downloaded if available for that year / dataset combination.   
 
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
@@ -825,5 +825,88 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
             blks = blks.query('COUNTYFP10 in @valid_county')
     
     return blks
+
+
+def county_subdivisions(state, county = None, cb = False, year = None, cache = False, subset_by = None):
+    """
+    Parameters
+    ----------
+    state : str 
+        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+        If None, county subdivisions for the entire United States will be downloaded 
+        if available for that year / dataset combination.  
+
+    county : str
+        The county name or three-digit FIPS code of the desired county. If None, county subdivisions
+        for the selected state will be downloaded. 
+
+    cb : bool 
+        If set to True, download a generalized (1:500k) cartographic boundary file.  
+        Defaults to False (the regular TIGER/Line file).
+
+    year : int 
+        The year of the TIGER/Line or cartographic boundary shapefile. 
+
+    cache : bool 
+        If True, the function will download a Census shapefile to a cache directory 
+        on the user's computer for future access.  If False, the function will load
+        the shapefile directly from the Census website.  
+    
+    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        An optional directive telling pygris to return a subset of data using 
+        underlying arguments in geopandas.read_file().  
+        subset_by operates as follows:
+            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            it will be interpreted as a bounding box and rows will be returned
+            that intersect that bounding box;
+
+            - If a user supplies a integer or a slice object, the first n rows
+            (or the rows defined by the slice object) will be returned;
+
+            - If a user supplies an object of type geopandas.GeoDataFrame
+            or of type geopandas.GeoSeries, rows that intersect the input 
+            object will be returned. CRS misalignment will be resolved 
+            internally.  
+
+    Returns
+    ----------
+    geopandas.GeoDataFrame: A GeoDataFrame of county subdivisions.
+
+
+    Notes
+    ----------
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch8GARM.pdf for more information.    
+    
+    
+    """
+
+    if year is None:
+        year = 2021
+        print(f"Using the default year of {year}")
+    
+    state = validate_state(state)
+
+    if cb:
+        if year == 2010:
+            url = f"https://www2.census.gov/geo/tiger/GENZ2010/gz_2010_{state}_060_00_500k.zip"
+        elif year == 2013:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/cb_{year}_{state}_cousub_500k.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_{state}_cousub_500k.zip"
+    else:
+        if year == 2010:
+            url = f"https://www2.census.gov/geo/tiger/TIGER2010/COUSUB/2010/tl_2010_{state}_cousub10.zip"
+        else:
+            url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUSUB/tl_{year}_{state}_cousub.zip"
+    
+    cs = load_tiger(url, cache = cache, subset_by = subset_by)
+
+    if county is not None:
+        if type(county) is not list:
+            county = [county]
+        valid_county = [validate_county(state, x) for x in county]
+        cs = cs.query('COUNTYFP in @valid_county')
+    
+    return cs
 
 
