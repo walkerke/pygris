@@ -1,3 +1,7 @@
+"""Water and coastline functions"""
+
+__author__ = "Kyle Walker <kyle@walker-data.com"
+
 from .helpers import load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 def area_water(state, county, year = None, cache = False, subset_by = None):

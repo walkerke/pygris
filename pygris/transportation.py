@@ -1,4 +1,7 @@
-from multiprocessing.util import sub_debug
+"""Transportation dataset functions"""
+
+__author__ = "Kyle Walker <kyle@walker-data.com"
+
 from .helpers import load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 
