@@ -1,4 +1,4 @@
-from pygris.helpers import load_tiger
+from pygris.helpers import _load_tiger
 
 def native_areas(cb = False, year = None, cache = False):
     if year is None:
@@ -10,7 +10,7 @@ def native_areas(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AIANNH/tl_{year}_us_aiannh.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def tribal_subdivisions_national(cb = False, year = None, cache = False):
@@ -26,7 +26,7 @@ def tribal_subdivisions_national(cb = False, year = None, cache = False):
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AITSN/tl_{year}_us_aitsn.zip"
 
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def alaska_native_regional_corporations(cb = False, year = None, cache = False):
@@ -39,7 +39,7 @@ def alaska_native_regional_corporations(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ANRC/tl_{year}_02_anrc.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def tribal_block_groups(cb = False, year = None, cache = False):
@@ -52,7 +52,7 @@ def tribal_block_groups(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TBG/tl_{year}_us_tbg.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 
@@ -66,4 +66,4 @@ def tribal_tracts(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TTRACT/tl_{year}_us_ttract.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)

@@ -6,7 +6,7 @@ import pandas as pd
 import re
 from pygris.internal_data import fips_path
 
-def load_tiger(url, cache = False, subset_by = None):
+def _load_tiger(url, cache = False, subset_by = None):
 
     # Parse the subset_by argument to figure out what it should represent
     # If subset_by is a tuple, it becomes bbox

@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from pygris.helpers import load_tiger
+from pygris.helpers import _load_tiger
 
 def regions(resolution = "500k", year = None, cache = False):
     """
@@ -38,7 +38,7 @@ def regions(resolution = "500k", year = None, cache = False):
 
     url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_region_{resolution}.zip"
 
-    rgns = load_tiger(url, cache = cache)
+    rgns = _load_tiger(url, cache = cache)
 
     return rgns
 
@@ -77,7 +77,7 @@ def nation(resolution = "5m", year = None, cache = False):
 
     url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_nation_{resolution}.zip"
 
-    nat = load_tiger(url, cache = cache)
+    nat = _load_tiger(url, cache = cache)
 
     return nat
 
@@ -116,6 +116,6 @@ def divisions(resolution = "500k", year = None, cache = False):
 
     url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_division_{resolution}.zip"
 
-    div = load_tiger(url, cache = cache)
+    div = _load_tiger(url, cache = cache)
 
     return div

@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from .helpers import load_tiger, validate_state, validate_county, fips_codes
+from .helpers import _load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 
 def counties(state = None, cb = False, resolution = '500k', year = None, cache = False, subset_by = None):
@@ -38,14 +38,14 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -88,7 +88,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUNTY/tl_{year}_us_county.zip"
 
-    ctys = load_tiger(url, cache = cache, subset_by = subset_by)
+    ctys = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if state is not None:
         if type(state) is not list:
@@ -129,14 +129,14 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -184,7 +184,7 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TRACT/tl_{year}_{state}_tract.zip"
 
-    trcts = load_tiger(url, cache = cache, subset_by = subset_by)
+    trcts = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if county is not None:
         if type(county) is not list:
@@ -226,14 +226,14 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -281,7 +281,7 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/BG/tl_{year}_{state}_bg.zip"
 
-    bgs = load_tiger(url, cache = cache, subset_by = subset_by)
+    bgs = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if county is not None:
         if type(county) is not list:
@@ -322,12 +322,12 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -371,7 +371,7 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
     
-    return load_tiger(url, cache = cache, subset_by = subset_by)
+    return _load_tiger(url, cache = cache, subset_by = subset_by)
 
 
 def states(cb = True, resolution = "500k", year = None, cache = False):
@@ -437,7 +437,7 @@ def states(cb = True, resolution = "500k", year = None, cache = False):
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/STATE/tl_{year}_us_state.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 def pumas(state = None, cb = False, year = None, cache = False, subset_by = None):
     """
@@ -467,14 +467,14 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -524,7 +524,7 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PUMA/tl_{year}_{state}_puma{suf}.zip"
 
-    pm = load_tiger(url, cache = cache, subset_by = subset_by)
+    pm = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     return pm
 
@@ -558,14 +558,14 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -599,7 +599,7 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PLACE/tl_{year}_{state}_place.zip"
 
-    return load_tiger(url, cache = cache, subset_by = subset_by)
+    return _load_tiger(url, cache = cache, subset_by = subset_by)
 
 
 def zctas(cb = False, starts_with = None, year = None, state = None, cache = False, subset_by = None):
@@ -635,14 +635,14 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -712,7 +712,7 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ZCTA5/tl_{year}_us_zcta510.zip"
     
-    zcta = load_tiger(url, cache = cache, subset_by = subset_by)
+    zcta = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if starts_with is not None:
         cols = zcta.columns.tolist()
@@ -759,14 +759,14 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -810,7 +810,7 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK20/tl_{year}_{state}_tabblock20.zip"
 
-    blks = load_tiger(url, cache = cache, subset_by = subset_by)
+    blks = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if county is not None and year > 2010:
         if year > 2019:
@@ -858,14 +858,14 @@ def county_subdivisions(state, county = None, cb = False, year = None, cache = F
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
-            - If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
 
-            - If a user supplies a integer or a slice object, the first n rows
+            * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
 
-            - If a user supplies an object of type geopandas.GeoDataFrame
+            * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
@@ -901,7 +901,7 @@ def county_subdivisions(state, county = None, cb = False, year = None, cache = F
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUSUB/tl_{year}_{state}_cousub.zip"
     
-    cs = load_tiger(url, cache = cache, subset_by = subset_by)
+    cs = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if county is not None:
         if type(county) is not list:

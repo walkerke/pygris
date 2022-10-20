@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from .helpers import load_tiger, validate_state, validate_county, fips_codes
+from .helpers import _load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 def area_water(state, county, year = None, cache = False, subset_by = None):
     """
@@ -64,7 +64,7 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{i}_areawater.zip"
-            w = load_tiger(url, cache = cache, subset_by = subset_by)
+            w = _load_tiger(url, cache = cache, subset_by = subset_by)
             county_water.append(w)
         
         all_w = pd.concat(county_water, ignore_index = True)
@@ -76,7 +76,7 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{valid_county}_areawater.zip"
-        w = load_tiger(url, cache = cache, subset_by = subset_by)
+        w = _load_tiger(url, cache = cache, subset_by = subset_by)
 
         return w
 
@@ -143,7 +143,7 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{i}_linearwater.zip"
-            w = load_tiger(url, cache = cache, subset_by = subset_by)
+            w = _load_tiger(url, cache = cache, subset_by = subset_by)
             county_water.append(w)
         
         all_w = pd.concat(county_water, ignore_index = True)
@@ -155,7 +155,7 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{valid_county}_linearwater.zip"
-        w = load_tiger(url, cache = cache, subset_by = subset_by)
+        w = _load_tiger(url, cache = cache, subset_by = subset_by)
 
         return w
 
@@ -192,4 +192,4 @@ def coastline(year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COAST/tl_{year}_us_coastline.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)

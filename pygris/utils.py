@@ -1,9 +1,16 @@
+"""Utility functions for working with Census datasets"""
+
+__author__ = "Kyle Walker <kyle@walker-data.com>"
+
 from pygris.enumeration_units import counties, states
 from pygris.water import area_water
 import warnings
 import pandas as pd
 import geopandas as gp
 def erase_water(input, area_threshold = 0.75, year = None, cache = False):
+    """
+    
+    """
     if year is None:
         year = 2021
 
@@ -13,9 +20,10 @@ def erase_water(input, area_threshold = 0.75, year = None, cache = False):
     # Find the county GEOIDs that overlap the input object
     with warnings.catch_warnings():
         county_proj = us_counties.to_crs(input.crs)
+        county_proj['county_id'] = county_proj['GEOID']
         county_overlaps = county_proj.overlay(input, keep_geom_type = False)
 
-    county_ids = county_overlaps.GEOID_1.unique().tolist()
+    county_ids = county_overlaps['county_id'].unique().tolist()
 
     if len(county_ids) == 0:
         raise ValueError("Your dataset does not appear to be in the United States; this function is not appropriate for your data.")
@@ -30,7 +38,7 @@ def erase_water(input, area_threshold = 0.75, year = None, cache = False):
 
         water_proj = water.to_crs(input.crs)
 
-        water_list.append(water)
+        water_list.append(water_proj)
 
     all_water = pd.concat(water_list, ignore_index = True)
 

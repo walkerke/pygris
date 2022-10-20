@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from pygris.helpers import load_tiger, validate_state, validate_county
+from pygris.helpers import _load_tiger, validate_state, validate_county
 
 def congressional_districts(state = None, cb = False, resolution = "500k", year = None,
                             cache = False, subset_by = None):
@@ -97,7 +97,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_us_cd{congress}.zip"
     
 
-    cds = load_tiger(url, cache = cache, subset_by = subset_by)
+    cds = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     if state is not None:
         if type(state) is not list:
@@ -204,7 +204,7 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
-    stateleg = load_tiger(url, cache = cache, subset_by = subset_by)
+    stateleg = _load_tiger(url, cache = cache, subset_by = subset_by)
 
     return stateleg
 
@@ -282,7 +282,7 @@ def voting_districts(state = None, county = None, cb = False,
     if cb:
         url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
 
-        vtds = load_tiger(url, cache = cache, subset_by = subset_by)
+        vtds = _load_tiger(url, cache = cache, subset_by = subset_by)
 
         if county is None:
             return vtds
@@ -303,6 +303,6 @@ def voting_districts(state = None, county = None, cb = False,
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
         
-        vtds = load_tiger(url, cache = cache, subset_by = subset_by)
+        vtds = _load_tiger(url, cache = cache, subset_by = subset_by)
 
         return vtds

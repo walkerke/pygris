@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from pygris.helpers import load_tiger
+from pygris.helpers import _load_tiger
 
 def core_based_statistical_areas(cb = False, resolution = "500k", year = None, cache = False):
     """
@@ -67,7 +67,7 @@ def core_based_statistical_areas(cb = False, resolution = "500k", year = None, c
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CBSA/tl_{year}_us_cbsa.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def urban_areas(cb = False, year = None, cache = False):
@@ -113,7 +113,7 @@ def urban_areas(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/UAC/tl_{year}_us_uac10.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def combined_statistical_areas(cb = False, resolution = "500k", year = None, cache = False):
@@ -166,7 +166,7 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CSA/tl_{year}_us_csa.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def metro_divisions(cb = False, resolution = "500k", year = None, cache = False):
@@ -222,7 +222,7 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CBSA/tl_{year}_us_metdiv.zip"
     
-    return load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache)
 
 
 def new_england(type = "necta", cb = False, year = None, cache = False):
@@ -270,17 +270,17 @@ def new_england(type = "necta", cb = False, year = None, cache = False):
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTA/tl_{year}_us_necta.zip"
 
-        return load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache)
 
     elif type == "combined":
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CNECTA/tl_{year}_us_cnecta.zip"
 
-        return load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache)
 
     elif type == "divisions":
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTADIV/tl_{year}_us_nectadiv.zip"
 
-        return load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache)
 
     else:
         raise ValueError("Invalid NECTA type; valid values include 'necta' (the default), 'combined', and 'divisions'.")
