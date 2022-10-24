@@ -9,7 +9,44 @@ import pandas as pd
 import geopandas as gp
 def erase_water(input, area_threshold = 0.75, year = None, cache = False):
     """
+    Automate the process of removing water area from an input dataset
+
+    Parameters
+    -------------
+    input : geopandas.GeoDataFrame
+        An input dataset from which you would like to remove water area.  The input dataset 
+        should be in the United States, ideally retrieved with the pygris package
+        for best performance.  
     
+    area_threshold : float
+        A proportion between 0 and 1 that references the water area threshold
+        to be used in the erase operation.  A value of 0 will use all water area;
+        a value of 1 will use none of the water area.  Typically, a user will specify 
+        a higher value to erase only the largest water areas, as erasing small areas 
+        will slow performance of the function. Defaults to 0.75.  
+
+    year : int
+        The year of the TIGER/Line water dataset to use.  Defaults to 2021. 
+        To minimize sliver polygons, choose the same year as your input 
+        pygris dataset.  
+
+    cache : bool
+        If True, area water files in the vicinity of input will be downloaded 
+        to a cache directory on the user's computer, or read from that cache directory.
+        This option is recommended for best performance.  
+
+    Returns
+    --------------
+    An object of type geopandas.GeoDataFrame with water area removed.
+
+    Notes
+    --------------
+    For a given input polygon spatial dataset in the United States, this function fetches water for 
+    nearby counties and removes those water areas from the input polygons.  Performance 
+    will likely be best when polygons are retrieved with the argument `cb = True` and 
+    the `year` argument aligns with that of the input polygons.  Sliver polygons due to 
+    misalignment are always possible; it is recommended to inspect your data after running 
+    this function.  
     """
     if year is None:
         year = 2021
@@ -54,6 +91,53 @@ def erase_water(input, area_threshold = 0.75, year = None, cache = False):
 
 
 def shift_geometry(input, geoid_column = None, preserve_area = False, position = "below"):
+    """
+    Shift and optionally rescale Alaska, Hawaii, and Puerto Rico for better cartographic display
+
+    Parameters
+    ---------------
+    input : geopandas.GeoDataFrame
+        A dataset of features in the United States to shift / rescale. 
+
+    geoid_column : str, optional
+        An optional column in the dataset that provides a state FIPS code. If used, avoids spatial 
+        overlay to identify features and can speed processing.  
+
+     preserve_area : bool
+        Whether or not to preserve the area of Alaska, Hawaii, and Puerto Rico when re-arranging 
+        features.  If False, Alaska will be shrunk to about half its size; Hawaii will be 
+        rescaled to 1.5x its size, and Puerto Rico will be rescaled to 2.5x its size. 
+        If True, sizes of Alaska, Hawaii, and Puerto Rico relative to the continental United 
+        States will be preserved.  Defaults to False. 
+
+    position : str
+        One of "below" (the default), which moves features in Alaska, Hawaii, and Puerto Rico below the 
+        continental United States; or "outside", which places features outside the 
+        continental US in locations that correspond roughly to their actual geographic 
+        positions.  
+
+    Returns
+    -----------
+    The original input dataset with shifted / rescaled geometry.
+
+    Notes
+    -----------
+    `shift_geometry()`, while designed for use with objects from the pygris package, will work with any US
+    dataset. If aligning datasets from multiple sources, you must take care to ensure that your options
+    specified in `preserve_area` and `position` are identical across layers.  Otherwise your layers
+    will not align correctly.
+
+    The function is also designed to work exclusively with features in the continental United States,
+    Alaska, Hawaii, and Puerto Rico.  If your dataset includes features outside these areas (e.g. other
+    US territories or other countries), you may get unworkable results.  It is advisable to filter out
+    those features before using ``shift_geometry()`.
+
+    Work on this function is inspired by and adapts some code from Claus Wilke's book Fundamentals of
+    Data Visualization (https://clauswilke.com/dataviz/geospatial-data.html); Bob Rudis's
+    albersusa R package (https://github.com/hrbrmstr/albersusa); and the ggcart R package
+    (https://uncoast-unconf.github.io/ggcart/).
+    
+    """
 
     minimal_states = states(cb = True, resolution = "20m", year = 2021).to_crs('ESRI:102003')
 
