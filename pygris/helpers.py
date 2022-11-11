@@ -5,6 +5,7 @@ import appdirs
 import pandas as pd
 import re
 from pygris.internal_data import fips_path
+from pygris.geocode import geocode
 
 def _load_tiger(url, cache = False, subset_by = None):
 
@@ -20,6 +21,21 @@ def _load_tiger(url, cache = False, subset_by = None):
         # CRS conflicts should be resolved internally by geopandas
         elif type(subset_by) is gp.GeoDataFrame or type(subset_by) is gp.GeoSeries:
             sub = {"mask": subset_by}
+        # If subset_by is a dict, it should be of format address: buffer, with the 
+        # buffer specified in meters
+        elif type(subset_by) is dict:
+            # We need to iterate through the key/value pairs, geocoding 
+            # each one
+            buffers = []
+            for i, j in subset_by.items():
+                g = geocode(address = i, as_gdf = True, limit = 1)
+                g_buffer = g.to_crs('ESRI:102010').buffer(distance = j)
+                buffers.append(g_buffer)
+            
+            buffer_gdf = pd.concat(buffers)
+
+            sub = {"mask": buffer_gdf}
+
 
     if not cache:
         if subset_by is not None:
