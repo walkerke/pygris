@@ -586,7 +586,7 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
         print(f"Using the default year of {year}")
     
     if state is None:
-        if year == 2019 and cb:
+        if year >= 2019 and cb:
             state = "us"
             print("Retrieving Census-designated places for the entire United States")
         else:
