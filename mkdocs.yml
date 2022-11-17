@@ -1,0 +1,12 @@
+site_name: pygris
+
+theme: 
+  name: material
+  palette: 
+    primary: black
+
+plugins:
+  - mkdocs-jupyter:
+      execute: True
+      include_source: True
+  - mkdocstrings
