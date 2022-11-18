@@ -1,4 +1,6 @@
 site_name: pygris
+site_url: https://walker-data.com/pygris
+repo_url: https://github.com/walkerke/pygris
 
 theme: 
   name: material
@@ -9,4 +11,8 @@ plugins:
   - mkdocs-jupyter:
       execute: True
       include_source: True
-  - mkdocstrings
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: numpy

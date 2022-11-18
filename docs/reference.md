@@ -1,3 +1,3 @@
 # Reference
 
-::: pygris.enumeration_units.counties
+Full API reference coming soon!
