@@ -7,7 +7,7 @@ The package is a general port of the [R __tigris__ package](https://github.com/w
 __pygris__ has not yet been published for installation from the Python Package Index or with `conda`.  For now, install from GitHub with the following command:
 
 ```bash
-pip install git+git://github.com/walkerke/pygris.git
+pip install git+https://github.com/walkerke/pygris.git
 ```
 
 Read the following articles for more information on how to use the package:
