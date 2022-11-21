@@ -13,16 +13,13 @@ def core_based_statistical_areas(cb = False, resolution = "500k", year = None, c
     cb : bool
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     resolution : str
         The resolution of the cartographic boundary file; only applies if 
         the cb argument is set to True. The default is "500k"; options also
-        include "5m" (1:5 million) and "20m" (1:20 million)
-    
+        include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -78,12 +75,10 @@ def urban_areas(cb = False, year = None, cache = False):
     ----------
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
-        Defaults to False (the regular TIGER/Line file).
-    
+        Defaults to False (the regular TIGER/Line file).    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -125,16 +120,13 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     resolution : str 
         The resolution of the cartographic boundary file; only applies if 
         the cb argument is set to True. The default is "500k"; options also
-        include "5m" (1:5 million) and "20m" (1:20 million)
-    
+        include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -178,16 +170,13 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     resolution : str 
         The resolution of the cartographic boundary file; only applies if 
         the cb argument is set to True. The default is "500k"; options also
-        include "5m" (1:5 million) and "20m" (1:20 million)
-    
+        include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -234,16 +223,13 @@ def new_england(type = "necta", cb = False, year = None, cache = False):
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     resolution : str 
         The resolution of the cartographic boundary file; only applies if 
         the cb argument is set to True. The default is "500k"; options also
-        include "5m" (1:5 million) and "20m" (1:20 million)
-    
+        include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load

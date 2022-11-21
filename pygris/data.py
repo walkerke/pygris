@@ -5,6 +5,54 @@ import os
 
 def get_census(dataset, variables, year = None, params = {}, 
                return_geoid = False, guess_dtypes = False):
+    """
+    Make a request to a US Census Bureau API endpoint
+
+    Parameters
+    --------------
+    dataset : str
+        The dataset name; browse https://api.census.gov/data.html for options.
+        The name will be the componet of the API URL that follows "data/" or 
+        the year.  For example, 1-year ACS data will be "acs/acs1". 
+    variables : str or list
+        A string (or list of strings) representing the variables requested from the 
+        API. Datasets have 'variables.html' pages that can be viewed to find 
+        variable IDs, e.g. "https://api.census.gov/data/2017/acs/acs1/variables.html". 
+    year : int
+        The year of the dataset, e.g. 2021. Not all datasets use a year, so leave 
+        blank if so (such as the timeseries APIs). 
+    params : dict
+        A dict of parameters to send with your API request.  This will 
+        vary based on the API you are using. You don't need to include
+        variables in the request, but other optional parameters 
+        will be included here. 
+    return_geoid : bool
+        If True, `get_census()` will attempt to assemble a GEOID column 
+        from contextual information in the dataset that is suitable for 
+        merging to Census shapes acquired with pygris.  This won't make sense
+        / won't work for all datasets, so use this option with caution. 
+        Defaults to False. 
+    guess_dtypes : bool
+        The Census APIs return all columns as strings, but many data 
+        columns should be treated as numbers.  If True, `get_census()` 
+        will scan the columns and try to guess which columns should be
+        converted to numeric and do so. Users may want to leave this
+        option False (the default) and convert columns on a 
+        case-by-case basis.  
+
+    Returns
+    -------------
+    A Pandas DataFrame of data from the requested US Census dataset.
+
+    Notes
+    -------------
+    This function is a low-level interface to the Census APIs provided for convenience. For a full-featured, Pythonic
+    interface to the US Census Bureau APIs, I would recommend using the cenpy package (https://cenpy-devs.github.io/cenpy/index.html)
+
+    `get_census()` is inspired by Hannah Recht's work on the censusapi R package (https://www.hrecht.com/censusapi/).  
+
+    """
+
     endpoint = "https://api.census.gov/data"
 
     if type(variables) is not list:
@@ -71,6 +119,51 @@ def get_census(dataset, variables, year = None, params = {},
 def get_lodes(state, year, lodes_type = "od", part = "main", 
               job_type = "JT00", segment = "S000", cache = False):
 
+    """
+    Get synthetic block-level data on workplace, residence, and origin-destination flows characteristics from the 
+    LEHD Origin-Destination Employment Statistics (LODES) dataset
+
+    Parameters
+    --------------
+    state : str
+        The state postal code of your requested data. Please note that not all states are available 
+        in all years.
+    year : int
+        The year of your requested data. LODES data go back to 2002, but not all datasets are available 
+        for all years / for all states.  
+    lodes_type : str
+        One of "od" (the default) for origin-destination flows, "wac" for workplace area characteristics, 
+        or "rac" for residence area characteristics.  
+    part : str
+        Only relevant for the "od" file.  "main" gives information on within-state residence to workplace flows.
+        "aux" gives information for residence to workplace flows from outside a given state.
+    job_type : str
+        The available job type breakdown; defaults to "JT00" for all jobs. Please review the LODES technical
+        documentation for a description of other options.
+    segment : str
+        The workforce segment, relevant when lodes_type is "wac" or "rac". Defaults to "S000" for total jobs;
+        review the LODES technical documentation for a description of other options.
+    cache : bool
+        If True, downloads the requested LODES data to a cache directory on your computer and reads from
+        that directory if the file exists. Defaults to False, which will download the data by default. 
+
+    Returns
+    ---------------
+    A Pandas DataFrame of LODES data.
+
+
+    Notes
+    ---------------
+    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.5.pdf for 
+    more information.
+
+    `get_lodes()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr) by 
+    Jamaal Green, Dillon Mahmoudi, and Liming Wang.
+
+
+    
+    """
+
     if lodes_type not in ['od', 'wac', 'rac']:
         raise ValueError("lodes_type must be one of 'od', 'rac', or 'wac'.")
     
@@ -122,5 +215,4 @@ def get_lodes(state, year, lodes_type = "od", part = "main",
         else:
             lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
 
-        return lodes_data        
-
+        return lodes_data          

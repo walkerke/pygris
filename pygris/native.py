@@ -9,31 +9,29 @@ def native_areas(cb = False, year = None, cache = False, subset_by = None):
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
-        
-    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        the shapefile directly from the Census website.         
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
             * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
+            * A dict of format {"address": "buffer_distance"} will return rows
+            that intersect a buffer of a given distance (in meters) around an 
+            input address.  
 
     Returns
     ----------
@@ -67,31 +65,29 @@ def tribal_subdivisions_national(cb = False, year = None, cache = False, subset_
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
-        
-    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        the shapefile directly from the Census website.          
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
             * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
+            * A dict of format {"address": "buffer_distance"} will return rows
+            that intersect a buffer of a given distance (in meters) around an 
+            input address.  
 
     Returns
     ----------
@@ -128,31 +124,29 @@ def alaska_native_regional_corporations(cb = False, year = None, cache = False, 
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
-        
-    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        the shapefile directly from the Census website.          
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
             * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
+            * A dict of format {"address": "buffer_distance"} will return rows
+            that intersect a buffer of a given distance (in meters) around an 
+            input address.  
 
     Returns
     ----------
@@ -186,31 +180,29 @@ def tribal_block_groups(cb = False, year = None, cache = False, subset_by = None
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
-        
-    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        the shapefile directly from the Census website.          
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
             * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
+            * A dict of format {"address": "buffer_distance"} will return rows
+            that intersect a buffer of a given distance (in meters) around an 
+            input address.  
 
     Returns
     ----------
@@ -245,31 +237,29 @@ def tribal_tracts(cb = False, year = None, cache = False, subset_by = None):
     cb : bool 
         If set to True, download a generalized (1:500k) cartographic boundary file.  
         Defaults to False (the regular TIGER/Line file).
-
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2021.
-
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
-        
-    subset_by : tuple, int, slice, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        the shapefile directly from the Census website.         
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
         An optional directive telling pygris to return a subset of data using 
         underlying arguments in geopandas.read_file().  
         subset_by operates as follows:
             * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
-
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
-
             * If a user supplies an object of type geopandas.GeoDataFrame
             or of type geopandas.GeoSeries, rows that intersect the input 
             object will be returned. CRS misalignment will be resolved 
             internally.  
+            * A dict of format {"address": "buffer_distance"} will return rows
+            that intersect a buffer of a given distance (in meters) around an 
+            input address.  
 
     Returns
     ----------

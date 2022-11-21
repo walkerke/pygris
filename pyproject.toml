@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pygris"
-version = "0.0.1"
+version = "0.1"
 authors = [
   { name="Kyle Walker", email="kyle@walker-data.com" },
 ]
