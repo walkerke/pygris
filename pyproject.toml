@@ -28,4 +28,6 @@ dependencies = {file = ["requirements.txt"]}
 
 [tool.setuptools.packages.find]
 exclude = ["site"]
-where = ["pygris"]
+
+[tool.setuptools.package-data]
+"pygris": ["internals/*.csv"]
