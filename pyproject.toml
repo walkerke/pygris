@@ -30,4 +30,4 @@ dependencies = {file = ["requirements.txt"]}
 exclude = ["site"]
 
 [tool.setuptools.package-data]
-"pygris": ["internals/*.csv"]
+"pygris" = ["internals/*.csv"]
