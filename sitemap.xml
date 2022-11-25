@@ -2,32 +2,32 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://walker-data.com/pygris/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://walker-data.com/pygris/01-basic-usage/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://walker-data.com/pygris/02-geometries/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://walker-data.com/pygris/03-data-utilities/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://walker-data.com/pygris/04-geocoding/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://walker-data.com/pygris/reference/</loc>
-         <lastmod>2022-11-21</lastmod>
+         <lastmod>2022-11-25</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

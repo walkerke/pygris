@@ -311,9 +311,16 @@
 <h1 id="introduction">Introduction</h1>
 <p><strong>pygris</strong> is a Python package to help users access US Census Bureau TIGER/Line and cartographic boundary shapefiles and load them into Python as GeoDataFrames.  The goal of the package is to make it simple to access US Census geographic data; data can be acquired with a single function for a given geography (e.g. <code>tracts()</code> for Census tracts) along with a few options.  </p>
 <p>The package is a general port of the <a href="https://github.com/walkerke/tigris">R <strong>tigris</strong> package</a> with a few modifications.  The framework of and philosophy behind the <strong>tigris</strong> package is covered in <a href="https://walker-data.com/census-r/census-geographic-data-and-applications-in-r.html">Chapter 5 of my book, <em>Analyzing US Census Data: Methods, Maps and Models in R</em></a>.  </p>
-<p><strong>pygris</strong> has not yet been published for installation from the Python Package Index or with <code>conda</code>.  For now, install from GitHub with the following command:</p>
+<p>Install <strong>pygris</strong> from PyPI with the following command:</p>
+<pre><code class="language-bash">pip install pygris
+
+# For optional dependencies to support interactive examples in the documentation:
+# pip install pygris[explore]
+</code></pre>
+<p>Alternatively, install the development version from GitHub:</p>
 <pre><code class="language-bash">pip install git+https://github.com/walkerke/pygris.git
 </code></pre>
+<p>Support for installation with <code>conda</code> is forthcoming.</p>
 <p>Read the following articles for more information on how to use the package:</p>
 <ul>
 <li><a href="https://walker-data.com/pygris/01-basic-usage">Basic usage of pygris</a></li>
