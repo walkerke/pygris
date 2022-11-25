@@ -4,11 +4,22 @@ __pygris__ is a Python package to help users access US Census Bureau TIGER/Line 
 
 The package is a general port of the [R __tigris__ package](https://github.com/walkerke/tigris) with a few modifications.  The framework of and philosophy behind the __tigris__ package is covered in [Chapter 5 of my book, _Analyzing US Census Data: Methods, Maps and Models in R_](https://walker-data.com/census-r/census-geographic-data-and-applications-in-r.html).  
 
-__pygris__ has not yet been published for installation from the Python Package Index or with `conda`.  For now, install from GitHub with the following command:
+Install __pygris__ from PyPI with the following command:
+
+```bash
+pip install pygris
+
+# For optional dependencies to support interactive examples in the documentation:
+# pip install pygris[explore]
+```
+
+Alternatively, install the development version from GitHub:
 
 ```bash
 pip install git+https://github.com/walkerke/pygris.git
 ```
+
+Support for installation with `conda` is forthcoming.
 
 Read the following articles for more information on how to use the package:
 
