@@ -23,6 +23,9 @@ dynamic = ["dependencies"]
 "Homepage" = "https://github.com/walkerke/pygris"
 "Bug Tracker" = "https://github.com/walkerke/pygris/issues"
 
+[project.optional-dependencies]
+explore = ["mapclassify", "ipyleaflet", "folium"]
+
 [tool.setuptools.dynamic]
 dependencies = {file = ["requirements.txt"]}
 
