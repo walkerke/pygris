@@ -1,1 +1,2 @@
 include pygris/internals/*.csv
+include requirements.txt
