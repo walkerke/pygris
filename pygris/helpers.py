@@ -48,7 +48,7 @@ def _load_tiger(url, cache = False, subset_by = None):
         cache_dir = appdirs.user_cache_dir("pygris")
 
         if not os.path.isdir(cache_dir):
-            os.mkdir(cache_dir) 
+            os.makedirs(cache_dir) 
 
         basename = os.path.basename(url)
 
