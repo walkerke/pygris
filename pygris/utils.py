@@ -156,7 +156,7 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
     else:
         input_albers = input_albers.sjoin(boxes, how = "left")
 
-        input_albers['state_fips'].fillna("00")
+        input_albers['state_fips'] = input_albers['state_fips'].fillna("00")
     
     # Alaska/Hawaii/PR centroids are necessary to put any dataset in the correct location
     ak_crs = 3338
@@ -168,8 +168,10 @@ def shift_geometry(input, geoid_column = None, preserve_area = False, position =
     pr_centroid = minimal_states.query("GEOID == '72'").to_crs(pr_crs).centroid
 
     def place_geometry_wilke(geometry, position, centroid, scale = 1):
-        diff = geometry.translate(xoff = -centroid.x, yoff = -centroid.y)
-        scaled = diff.scale(xfact = scale, yfact = scale, origin = (centroid.x, centroid.y))
+        centroid_x = centroid.x.values[0]
+        centroid_y = centroid.y.values[0]
+        diff = geometry.translate(xoff = -centroid_x, yoff = -centroid_y)
+        scaled = diff.scale(xfact = scale, yfact = scale, origin = (centroid_x, centroid_y))
         return scaled.translate(xoff = position[0], yoff = position[1])
 
     bb = minimal_states.query('GEOID not in ["02", "15", "72"]', engine = "python").total_bounds
