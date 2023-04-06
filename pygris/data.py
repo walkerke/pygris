@@ -116,7 +116,7 @@ def get_census(dataset, variables, year = None, params = {},
     return out
 
 
-def get_lodes(state, year, lodes_type = "od", part = "main", 
+def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main", 
               job_type = "JT00", segment = "S000", cache = False):
 
     """
@@ -131,6 +131,10 @@ def get_lodes(state, year, lodes_type = "od", part = "main",
     year : int
         The year of your requested data. LODES data go back to 2002, but not all datasets are available 
         for all years / for all states.  
+    version : str
+        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated at 2020 Census blocks.
+        "LODES7" is enumerated at 2010 Census blocks, but ends in 2019; "LODES5" is enumerated at 2000 Census
+        blocks, but ends in 2009.  
     lodes_type : str
         One of "od" (the default) for origin-destination flows, "wac" for workplace area characteristics, 
         or "rac" for residence area characteristics.  
@@ -170,9 +174,9 @@ def get_lodes(state, year, lodes_type = "od", part = "main",
     state = state.lower()
 
     if lodes_type == "od":
-        url = f"https://lehd.ces.census.gov/data/lodes/LODES7/{state}/od/{state}_od_{part}_{job_type}_{year}.csv.gz"
+        url = f"https://lehd.ces.census.gov/data/lodes/{version}/{state}/od/{state}_od_{part}_{job_type}_{year}.csv.gz"
     else:
-        url = f"https://lehd.ces.census.gov/data/lodes/LODES7/{state}/{lodes_type}/{state}_{lodes_type}_{segment}_{job_type}_{year}.csv.gz"
+        url = f"https://lehd.ces.census.gov/data/lodes/{version}/{state}/{lodes_type}/{state}_{lodes_type}_{segment}_{job_type}_{year}.csv.gz"
     
     if not cache:
         lodes_data = pd.read_csv(url)
