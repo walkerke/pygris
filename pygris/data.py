@@ -67,55 +67,53 @@ def get_census(dataset, variables, year = None, params = {},
     data=[]
     n_chunks = np.ceil(len(variables) / 50)
     for chunk in np.array_split(variables, n_chunks):
-      
+
       joined_vars =  = ",".join(chunk)
-      
+
       params.update({'get': joined_vars})
-      
+
       req = requests.get(url = base, params = params)
 
       if req.status_code != 200:
           raise SyntaxError(f"Request failed. The Census Bureau error message is {req.text}")
 
-    
-      out = pd.read_json(req.text)
-      out.columns = out.iloc[0]
-      out = out[1:]
+
+      df = pd.DataFrame(req.json()[1:], columns=req.json()[0])
 
       if return_geoid:
           # find the columns that are not in variables
-          my_cols = list(out.columns)
-  
+          my_cols = list(df.columns)
+
           # if 'state' is not in the list of columns, don't assemble the GEOID; too much 
           # ambiguity among possible combinations across the various endpoints
           if "state" not in my_cols:
               raise ValueError("`return_geoid` is not supported for this geography hierarchy.")
-  
+
           # Identify the position of the state column in my_cols, and 
           # extract all the columns that follow it
           state_ix = my_cols.index("state")
-  
+
           geoid_cols = my_cols[state_ix:]
-         
+
           # Assemble the GEOID column, then remove its constituent parts
-          out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
-  
-          out = out.drop(geoid_cols, axis = 1)
-      
+          df['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
+
+          df.drop(geoid_cols, axis = 1, inplace = True)
+
       if guess_dtypes:
           num_list = []
           # Iterate through the columns in variables and try to guess if they should be converted
-          for v in variables:
-              check = pd.to_numeric(out[v], errors = "coerce")
+          for v in chunk:
+              check = pd.to_numeric(df[v], errors = "coerce")
               # If the columns aren't fully null, convert to numeric, taking care of any oddities
               if not pd.isnull(check.unique())[0]:
-                  out[v] = check
+                  df[v] = check
                   num_list.append(v)
 
           # If we are guessing numerics, we should convert NAs (negatives below -1 million)
           # to NaN. Users who want to keep the codes should keep as object and handle
           # themselves.
-          out[num_list] = out[num_list].where(out[num_list] > -999999)
+          df[num_list] = df[num_list].where(df[num_list] > -999999)
 
       data+=[df]  # Add output from each chunk to list
 
@@ -126,7 +124,7 @@ def get_census(dataset, variables, year = None, params = {},
     out = data[0]
     for df_b in data[1:]:
         out = out.merge(df_b)
-    
+
     return out
 
 
