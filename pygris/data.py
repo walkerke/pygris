@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import appdirs
 import os
+from pygris.enumeration_units import states, counties, tracts, block_groups, blocks
 
 def get_census(dataset, variables, year = None, params = {}, 
                return_geoid = False, guess_dtypes = False):
@@ -117,7 +118,7 @@ def get_census(dataset, variables, year = None, params = {},
 
 
 def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main", 
-              job_type = "JT00", segment = "S000", cache = False):
+              job_type = "JT00", segment = "S000", agg_level = "block", cache = False):
 
     """
     Get synthetic block-level data on workplace, residence, and origin-destination flows characteristics from the 
@@ -147,6 +148,9 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
     segment : str
         The workforce segment, relevant when lodes_type is "wac" or "rac". Defaults to "S000" for total jobs;
         review the LODES technical documentation for a description of other options.
+    agg_level : str
+        The level at which to aggregate the data.  Defaults to the Census block; other options include 
+        "state", "county", "tract", and "block group".  
     cache : bool
         If True, downloads the requested LODES data to a cache directory on your computer and reads from
         that directory if the file exists. Defaults to False, which will download the data by default. 
@@ -181,15 +185,6 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
     if not cache:
         lodes_data = pd.read_csv(url)
         
-        if lodes_type == "od":
-            lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
-            lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
-        elif lodes_type == "rac":
-            lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
-        else:
-            lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)        
-
-        return lodes_data
     else:
         cache_dir = appdirs.user_cache_dir("pygris")
 
@@ -211,12 +206,47 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
         # Now, read in the file from the cache directory
         lodes_data = pd.read_csv(out_file)
 
-        if lodes_type == "od":
-            lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
-            lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
-        elif lodes_type == "rac":
-            lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
-        else:
-            lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
+    # Drop the 'createdate' column
+    lodes_data = lodes_data.drop('createdate', axis = 1)
 
-        return lodes_data          
+    if lodes_type == "od":
+        lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
+        lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
+    elif lodes_type == "rac":
+        lodes_data['h_geocode'] = lodes_data['h_geocode'].astype(str).str.zfill(15)
+    else:
+        lodes_data['w_geocode'] = lodes_data['w_geocode'].astype(str).str.zfill(15)
+
+    # Handle aggregation logic
+    if agg_level != "block":
+        if agg_level == "state":
+            end = 2
+        elif agg_level == "county":
+            end = 5
+        elif agg_level == "tract":
+            end = 11
+        elif agg_level == "block group":
+            end = 12
+        else: 
+            raise ValueError("Invalid agg_level; choose one of 'state', 'county', 'tract', or 'block group'.")
+        
+        if lodes_type == "wac":
+            lodes_data['w_geocode'] = lodes_data['w_geocode'].str.slice(stop = end)
+
+            lodes_data = lodes_data.groupby('w_geocode').agg("sum")
+        elif lodes_type == "rac":
+            lodes_data['h_geocode'] = lodes_data['h_geocode'].str.slice(stop = end)
+
+            lodes_data = lodes_data.groupby('h_geocode').agg("sum")
+        elif lodes_type == "od":
+            lodes_data['h_geocode'] = lodes_data['h_geocode'].str.slice(stop = end)
+            lodes_data['w_geocode'] = lodes_data['w_geocode'].str.slice(stop = end)
+
+            lodes_data = lodes_data.groupby(['h_geocode', 'w_geocode']).agg("sum")  
+
+        return lodes_data.reset_index()          
+    
+
+
+
+        
