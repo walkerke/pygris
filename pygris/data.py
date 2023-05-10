@@ -3,6 +3,8 @@ import pandas as pd
 import appdirs
 import os
 from pygris.enumeration_units import states, counties, tracts, block_groups, blocks
+from pygris.geometry import _get_geometry
+import warnings
 
 def get_census(dataset, variables, year = None, params = {}, 
                return_geoid = False, guess_dtypes = False):
@@ -118,7 +120,9 @@ def get_census(dataset, variables, year = None, params = {},
 
 
 def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main", 
-              job_type = "JT00", segment = "S000", agg_level = "block", cache = False):
+              job_type = "JT00", segment = "S000", agg_level = "block", cache = False,
+              return_geometry = False, return_lonlat = False, od_geometry = "home", 
+              cb = True):
 
     """
     Get synthetic block-level data on workplace, residence, and origin-destination flows characteristics from the 
@@ -150,14 +154,25 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
         review the LODES technical documentation for a description of other options.
     agg_level : str
         The level at which to aggregate the data.  Defaults to the Census block; other options include 
-        "state", "county", "tract", and "block group".  
+        "county", "tract", and "block group".  
     cache : bool
         If True, downloads the requested LODES data to a cache directory on your computer and reads from
         that directory if the file exists. Defaults to False, which will download the data by default. 
+    return_geometry : bool
+        If True, get_lodes() will fetch the corresponding polygon geometry for shapes and return a GeoPandas
+        GeoDataFrame.  Defaults to False.
+    return_lonlat : bool
+        If True, columns representing the corresponding polygon centroid will be 
+    od_geometry : str
+        Whether to attach residential geometries ("home") or workplace geometries ("work").  Only specified
+        when lodes_type is "od".  Defaults to "home".  
+    cb : bool
+        If retrieving geometry, use the Cartographic Boundary shapefile (True) or the TIGER/Line shapefile (False). 
+        Defaults to True for LODES8 and LODES7, and False for LODES5.  
 
     Returns
     ---------------
-    A Pandas DataFrame of LODES data.
+    A Pandas DataFrame or GeoPandas GeoDataFrame of LODES data.
 
 
     Notes
@@ -219,9 +234,7 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
 
     # Handle aggregation logic
     if agg_level != "block":
-        if agg_level == "state":
-            end = 2
-        elif agg_level == "county":
+        if agg_level == "county":
             end = 5
         elif agg_level == "tract":
             end = 11
@@ -244,7 +257,135 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
 
             lodes_data = lodes_data.groupby(['h_geocode', 'w_geocode']).agg("sum")  
 
-        return lodes_data.reset_index()          
+    lodes_data = lodes_data.reset_index()
+    # Handle geometry requests
+    if return_geometry:
+        print("Requesting feature geometry. Use cache = True to speed this up in the future.")
+        if return_lonlat: 
+            raise ValueError("return_geometry and return_lonlat cannot be used at the same time.")
+
+        if version == "LODES8":
+            year = 2020
+        elif version == "LODES7": 
+            year = 2019
+        else:
+            year = 2000
+            cb = False
+
+        
+
+        if lodes_type == "wac":
+            geom = _get_geometry(geography = agg_level, state = state, cb = cb, year = year, cache = cache)
+
+            geom.columns = ['w_geocode', 'geometry']
+
+            geom_merged = geom.merge(lodes_data, on = "w_geocode")
+
+        elif lodes_type == "rac":
+            geom = _get_geometry(geography = agg_level, state = state, cb = cb, year = year, cache = cache)
+
+            geom.columns = ['h_geocode', 'geometry']
+
+            geom_merged = geom.merge(lodes_data, on = "h_geocode")     
+        
+        elif lodes_type == "od":
+            if od_geometry == "home":
+                if part == "main":
+                    geom = _get_geometry(geography = agg_level, state = state, cb = cb, year = year, cache = cache)
+                    geom.columns = ['h_geocode', 'geometry']
+
+                    geom_merged = geom.merge(lodes_data, on = "h_geocode") 
+                else: 
+                    aux_states = lodes_data['h_geocode'].str.slice(stop = 2).unique().tolist()
+                    h_geom_list = [_get_geometry(geography = agg_level, state = x, year = year, cb = cb, cache = cache) for x in aux_states]
+                    h_geom = pd.concat(h_geom_list)
+
+                    h_geom.columns = ['h_geocode', 'geometry']
+
+                    geom_merged = h_geom.merge(lodes_data, on = "h_geocode") 
+
+            elif od_geometry == "work":
+                geom = _get_geometry(geography = agg_level, state = state, cb = cb, year = year, cache = cache)
+
+                geom.columns = ['w_geocode', 'geometry']
+
+                geom_merged = geom.merge(lodes_data, on = "w_geocode")
+            else: 
+                raise ValueError("od_geometry must be one of 'home' or 'work'.")
+        
+        return geom_merged
+    
+    elif return_lonlat:
+        warnings.filterwarnings('ignore')
+        print("Requesting feature geometry to determine lon / lat. Use cache = True to speed this up in the future.")
+
+        if version == "LODES8":
+            year = 2020
+        elif version == "LODES7": 
+            year = 2019
+        else:
+            year = 2000
+            cb = False
+
+        geom = _get_geometry(geography = agg_level, state = state, cb = cb, year = year, cache = cache)
+
+        if lodes_type == "wac":
+            geom.columns = ['w_geocode', 'geometry']
+
+            with warnings.catch_warnings():
+                geom['w_lon'] = geom.centroid.x
+                geom['w_lat'] = geom.centroid.y
+
+            xy = geom.drop('geometry', axis = 1)
+
+            lodes_merged = lodes_data.merge(xy, on = 'w_geocode')
+        
+        elif lodes_type == "rac":
+            geom.columns = ['h_geocode', 'geometry']
+
+            with warnings.catch_warnings():
+                geom['h_lon'] = geom.centroid.x
+                geom['h_lat'] = geom.centroid.y
+
+            xy = geom.drop('geometry', axis = 1)
+
+            lodes_merged = lodes_data.merge(xy, on = 'h_geocode')
+        
+        elif lodes_type == "od":
+            w_geom = geom.copy()
+
+            w_geom.columns = ['w_geocode', 'geometry']
+
+            with warnings.catch_warnings():
+                w_geom['w_lon'] = w_geom.centroid.x
+                w_geom['w_lat'] = w_geom.centroid.y
+
+            w_xy = w_geom.drop('geometry', axis = 1)
+
+            if part == "main":
+                h_geom = geom.copy()
+            elif part == "aux":
+                aux_states = lodes_data['h_geocode'].str.slice(stop = 2).unique().tolist()
+                h_geom_list = [_get_geometry(geography = agg_level, state = x, year = year, cb = cb, cache = cache) for x in aux_states]
+                h_geom = pd.concat(h_geom_list)
+
+            h_geom.columns = ['h_geocode', 'geometry']
+
+            with warnings.catch_warnings():
+                h_geom['h_lon'] = h_geom.centroid.x
+                h_geom['h_lat'] = h_geom.centroid.y
+
+            h_xy = h_geom.drop('geometry', axis = 1)
+
+            lodes_merged = (lodes_data
+                .merge(h_xy, on = "h_geocode")
+                .merge(w_xy, on = "w_geocode")
+                )
+        
+        return lodes_merged
+    else:
+        return lodes_data
+
     
 
 
