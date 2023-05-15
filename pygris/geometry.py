@@ -11,6 +11,7 @@ def _get_geometry(geography, state, year, cb, cache):
         geo = block_groups(cb = cb, state = state, year = year, cache = cache)
     elif geography == "block":
         geo = blocks(state = state, year = year, cache = cache)
+        geo = geo.rename({"GEOID20": "GEOID"}, axis = 1)
     
 
     geo_sub = geo.filter(['GEOID', 'geometry'])
