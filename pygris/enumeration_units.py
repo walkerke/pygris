@@ -483,7 +483,14 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
             state = "us"
             print("Retrieving PUMAs for the entire United States")
         else:
-            raise ValueError("A year must be specified for this year/dataset combination.")
+            fips = fips_codes()
+
+            print("Retrieving PUMAs by state and combining the result")
+            all_states = [code for code in fips['state_code'].unique().tolist() if code <= "56"]
+
+            all_pumas = pd.concat([pumas(x, year = year, cache = cache) for x in all_states])
+
+            return all_pumas
     else:
         state = validate_state(state)
     
