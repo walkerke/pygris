@@ -260,7 +260,11 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
     lodes_data = lodes_data.reset_index()
     # Handle geometry requests
     if return_geometry:
-        print("Requesting feature geometry. Use cache = True to speed this up in the future.")
+        print("Requesting feature geometry.") 
+
+        if not cache:
+            ("Use cache = True to speed this up in the future.")
+
         if return_lonlat: 
             raise ValueError("return_geometry and return_lonlat cannot be used at the same time.")
 
@@ -317,7 +321,10 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
     
     elif return_lonlat:
         warnings.filterwarnings('ignore')
-        print("Requesting feature geometry to determine lon / lat. Use cache = True to speed this up in the future.")
+        print("Requesting feature geometry to determine longitude and latitude.") 
+
+        if not cache:
+            ("Use cache = True to speed this up in the future.")
 
         if version == "LODES8":
             year = 2020
