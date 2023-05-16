@@ -1,10 +1,12 @@
 import requests
 import pandas as pd
+import numpy as np
 import appdirs
 import os
 from pygris.enumeration_units import states, counties, tracts, block_groups, blocks
 from pygris.geometry import _get_geometry
 import warnings
+
 
 def get_census(dataset, variables, year = None, params = {}, 
                return_geoid = False, guess_dtypes = False):
@@ -61,60 +63,71 @@ def get_census(dataset, variables, year = None, params = {},
     if type(variables) is not list:
         variables = [variables]
 
-    joined_vars = ",".join(variables)
-
-    params.update({'get': joined_vars})
-
     if year is None:
         base = f"{endpoint}/{dataset}"
     else:
         base = f"{endpoint}/{year}/{dataset}"
 
-    req = requests.get(url = base, params = params)
+    # get request must be <50, split it and run each chunk (adapted from cenpy)
+    data = []
+    n_chunks = np.ceil(len(variables) / 50)
+    for chunk in np.array_split(variables, n_chunks):
 
-    if req.status_code != 200:
-        raise SyntaxError(f"Request failed. The Census Bureau error message is {req.text}")
+        joined_vars = ",".join(chunk)
 
-    
-    out = pd.read_json(req.text)
+        params.update({'get': joined_vars})
 
-    out.columns = out.iloc[0]
-    out = out[1:]
+        req = requests.get(url = base, params = params)
 
-    if return_geoid:
-        # find the columns that are not in variables
-        my_cols = list(out.columns)
+        if req.status_code != 200:
+            raise SyntaxError(f"Request failed. The Census Bureau error message is {req.text}")
 
-        # if 'state' is not in the list of columns, don't assemble the GEOID; too much 
-        # ambiguity among possible combinations across the various endpoints
-        if "state" not in my_cols:
-            raise ValueError("`return_geoid` is not supported for this geography hierarchy.")
+        df = pd.DataFrame(req.json()[1:], columns=req.json()[0])
 
-        # Identify the position of the state column in my_cols, and 
-        # extract all the columns that follow it
-        state_ix = my_cols.index("state")
+        if return_geoid:
+            # find the columns that are not in variables
+            my_cols = list(df.columns)
 
-        geoid_cols = my_cols[state_ix:]
-       
-        # Assemble the GEOID column, then remove its constituent parts
-        out['GEOID'] = out[geoid_cols].agg("".join, axis = 1)
+            # if 'state' is not in the list of columns, don't assemble the GEOID; too much
+            # ambiguity among possible combinations across the various endpoints
+            if "state" not in my_cols:
+                raise ValueError("`return_geoid` is not supported for this geography hierarchy.")
 
-        out = out.drop(geoid_cols, axis = 1)
-    
-    if guess_dtypes:
-        num_list = []
-        # Iterate through the columns in variables and try to guess if they should be converted
-        for v in variables:
-            check = pd.to_numeric(out[v], errors = "coerce")
-            # If the columns aren't fully null, convert to numeric, taking care of any oddities
-            if not pd.isnull(check.unique())[0]:
-                out[v] = check
-                num_list.append(v)
+            # Identify the position of the state column in my_cols, and
+            # extract all the columns that follow it
+            state_ix = my_cols.index("state")
 
-        # If we are guessing numerics, we should convert NAs (negatives below -1 million)
-        # to NaN. Users who want to keep the codes should keep as object and handle
-        # themselves.
-        out[num_list] = out[num_list].where(out[num_list] > -999999)
+            geoid_cols = my_cols[state_ix:]
+
+            # Assemble the GEOID column, then remove its constituent parts
+            df['GEOID'] = df[geoid_cols].agg("".join, axis = 1)
+
+            df.drop(geoid_cols, axis = 1, inplace = True)
+
+        if guess_dtypes:
+            num_list = []
+            # Iterate through the columns in variables and try to guess if they should be converted
+            for v in chunk:
+                check = pd.to_numeric(df[v], errors = "coerce")
+                # If the columns aren't fully null, convert to numeric, taking care of any oddities
+                if not pd.isnull(check.unique())[0]:
+                    df[v] = check
+                    num_list.append(v)
+
+            # If we are guessing numerics, we should convert NAs (negatives below -1 million)
+            # to NaN. Users who want to keep the codes should keep as object and handle
+            # themselves.
+            df[num_list] = df[num_list].where(df[num_list] > -999999)
+
+        data += [df]  # Add output from each chunk to list
+
+    if len(data) < 2:
+        return data[0]
+
+    # Merge on shared cols (either GEOID or State/County etc.
+    out = data[0]
+    for df_b in data[1:]:
+        out = out.merge(df_b)
 
     return out
 
@@ -391,10 +404,8 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
         
         return lodes_merged
     else:
-        return lodes_data
-
-    
+        return lodes_data 
 
 
 
-        
+
