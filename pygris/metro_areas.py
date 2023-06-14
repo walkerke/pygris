@@ -209,7 +209,7 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
         else:
             url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_metdiv_{resolution}.zip"
     else:
-        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CBSA/tl_{year}_us_metdiv.zip"
+        url = f"https://www2.census.gov/geo/tiger/TIGER{year}/METDIV/tl_{year}_us_metdiv.zip"
     
     return _load_tiger(url, cache = cache)
 
