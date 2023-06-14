@@ -570,11 +570,13 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
         print(f"Using the default year of {year}")
     
     if state is None:
-        if year >= 2019 and cb:
+        if year < 2019:
+            raise ValueError("Retrieving Census-designated data for the entire US only available for years on or after 2019")
+        elif not cb:
+            raise ValueError("Retrieving Census-designated data for the entire US only available when cb is set to True")
+        else:
             state = "us"
             print("Retrieving Census-designated places for the entire United States")
-        else:
-            raise ValueError("A year must be specified for this year/dataset combination.")
     else:
         state = validate_state(state)
     
