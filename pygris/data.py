@@ -190,7 +190,7 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
 
     Notes
     ---------------
-    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES7/LODESTechDoc7.5.pdf for 
+    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for 
     more information.
 
     `get_lodes()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr) by 
@@ -407,5 +407,74 @@ def get_lodes(state, year, version = "LODES8", lodes_type = "od", part = "main",
         return lodes_data 
 
 
+def get_xwalk(state, version = "LODES8", cache = False):
+
+    """
+    Get a Census block-to-parent geography crosswalk file for a given state and a given Census year (represented)
+    by a LODES version).  
+
+    Parameters
+    --------------
+    state : str
+        The state postal code of your requested data. 
+    version : str
+        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated at 2020 Census blocks. Version 7
+        (use "LODES7") is enumerated at 2010 Census blocks.
+    cache : bool
+        If True, downloads the requested LODES data to a cache directory on your computer and reads from
+        that directory if the file exists. Defaults to False, which will download the data by default.     
+
+    Returns
+    ---------------
+    A Pandas DataFrame representing the correspondence between Census blocks and a variety of parent geograpies
+    in a given LODES dataset (and in turn a given Census year).
+
+
+    Notes
+    ---------------
+    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for 
+    more information.
+
+    `get_xwalk()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr) by 
+    Jamaal Green, Dillon Mahmoudi, and Liming Wang.
+
+
+    
+    """
+
+    state = state.lower()
+
+    url = f"https://lehd.ces.census.gov/data/lodes/{version}/{state}/{state}_xwalk.csv.gz"
+
+    if not cache:
+        xwalk_data = pd.read_csv(url, dtype="object")
+        
+    else:
+        cache_dir = appdirs.user_cache_dir("pygris")
+
+        if not os.path.isdir(cache_dir):
+            os.mkdir(cache_dir) 
+
+        basename = os.path.basename(url)
+
+        out_file = os.path.join(cache_dir, basename)
+        
+        # If the file doesn't exist, you'll need to download it
+        # and write it to the cache directory
+        if not os.path.isfile(out_file):
+            req = requests.get(url = url)
+
+            with open(out_file, 'wb') as fd:
+                fd.write(req.content)
+        
+        # Now, read in the file from the cache directory
+        xwalk_data = pd.read_csv(out_file, dtype = "object")
+    
+    xwalk_data = xwalk_data.drop('createdate', axis = 1)
+
+    xwalk_data['blklatdd'] = xwalk_data['blklatdd'].astype(float)
+    xwalk_data['blklondd'] = xwalk_data['blklondd'].astype(float)
+
+    return xwalk_data
 
 
