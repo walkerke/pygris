@@ -78,7 +78,7 @@ def fips_codes():
 def validate_state(state, quiet = False):
     # Standardize as lowercase
     original_input = state
-    state = state.lower()
+    state = str(state).lower()
     # Get rid of whitespace
     state = state.strip()
 

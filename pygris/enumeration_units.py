@@ -90,7 +90,15 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         if type(state) is not list:
             state = [state]
         valid_state = [validate_state(x) for x in state]
-        ctys = ctys.query('STATEFP in @valid_state')
+
+        if year == 1990:
+            state_col = 'ST'
+        elif year in [2000, 2010]: 
+            state_col = 'STATE' if cb is True else f'STATEFP{yr}'
+        else: 
+            state_col = 'STATEFP'
+
+        ctys = ctys.query(f'{state_col} in @valid_state')
 
     return ctys
 
