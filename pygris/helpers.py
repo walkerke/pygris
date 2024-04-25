@@ -78,7 +78,7 @@ def fips_codes():
 def validate_state(state, quiet = False):
     # Standardize as lowercase
     original_input = state
-    state = str(state).lower()
+    state = state.lower()
     # Get rid of whitespace
     state = state.strip()
 
@@ -120,6 +120,28 @@ def validate_state(state, quiet = False):
                     print(f"Using FIPS code '{state_fips}' for input '{original_input}'")
                 
                 return state_fips
+
+def get_state_name(state, quiet = False):
+    # Standardize as lowercase
+    original_input = state
+    state = state.lower()
+    # Get rid of whitespace
+    state = state.strip()
+
+    # Get the FIPS codes dataset
+    fips = fips_codes()
+    # If a state name, grab the appropriate info from fips_codes
+    state_sub = fips.query('state_code == @state')
+
+    if state_sub.shape[0] == 0:
+        raise ValueError("You have likely entered an invalid state code, please revise.")
+    else:
+        state_name = state_sub.state_name.unique()[0]
+
+        if not quiet:
+            print(f"Using state name '{state_name}' for input '{original_input}'")
+        
+        return state_name
             
 
 def validate_county(state, county, quiet = False):

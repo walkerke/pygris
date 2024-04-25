@@ -2,7 +2,7 @@
 
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
-from .helpers import _load_tiger, validate_state, validate_county, fips_codes
+from .helpers import _load_tiger, validate_state, validate_county, fips_codes, get_state_name
 import pandas as pd
 
 def counties(state = None, cb = False, resolution = '500k', year = None, cache = False, subset_by = None):
@@ -90,15 +90,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         if type(state) is not list:
             state = [state]
         valid_state = [validate_state(x) for x in state]
-
-        if year == 1990:
-            state_col = 'ST'
-        elif year in [2000, 2010]: 
-            state_col = 'STATE' if cb is True else f'STATEFP{yr}'
-        else: 
-            state_col = 'STATEFP'
-
-        ctys = ctys.query(f'{state_col} in @valid_state')
+        ctys = ctys.query('STATEFP in @valid_state')
 
     return ctys
 
@@ -181,6 +173,9 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
         elif year in [2000, 2010]:
             suf = str(year)[2:]
             url = f"https://www2.census.gov/geo/tiger/TIGER2010/TRACT/{year}/tl_2010_{state}_tract{suf}.zip"
+        elif year in [2008, 2009]:
+            state_name = get_state_name(state).upper().replace(' ', '_')
+            url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{state}_{state_name}/tl_{year}_{state}_tract00.zip"
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TRACT/tl_{year}_{state}_tract.zip"
 
