@@ -1,74 +1,174 @@
 import requests
 import geopandas as gp
 import os
+import tempfile
 import appdirs
 import pandas as pd
 import re
+import ftplib
+import zipfile
+from urllib.parse import urlparse
 from pygris.internal_data import fips_path
 from pygris.geocode import geocode
 
-def _load_tiger(url, cache = False, subset_by = None):
-
+def _load_tiger(url, cache=False, subset_by=None, protocol="http", timeout=1800):
+    """
+    Helper function to load census TIGER/Line shapefiles.
+    
+    Parameters
+    ----------
+    url : str
+        URL for zipped shapefile in TIGER database.
+    cache : bool
+        Whether to cache the shapefile locally. Defaults to False.
+    subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
+        Optional directive for subsetting the data.
+    protocol : str
+        Protocol to use for downloading files. Options are "http" (default) or "ftp".
+    timeout : int
+        Timeout in seconds for download operations. Defaults to 300 (5 minutes).
+    
+    Returns
+    -------
+    geopandas.GeoDataFrame
+        A GeoDataFrame containing the TIGER/Line data.
+    """
+    # Store original URL before protocol modification
+    original_url = url
+    
+    # Modify URL for FTP if requested
+    if protocol == "ftp" and url.startswith("https://www2"):
+        url = url.replace("https://www2", "ftp://ftp2")
+    
     # Parse the subset_by argument to figure out what it should represent
-    # If subset_by is a tuple, it becomes bbox
     if subset_by is not None:
         if type(subset_by) is tuple:
             sub = {"bbox": subset_by}
-        # If subset_by is an integer or slice, it becomes rows
         elif type(subset_by) is int or type(subset_by) is slice:
             sub = {"rows": subset_by}
-        # If subset_by is a GeoDataFrame or GeoSeries, use mask
-        # CRS conflicts should be resolved internally by geopandas
         elif type(subset_by) is gp.GeoDataFrame or type(subset_by) is gp.GeoSeries:
             sub = {"mask": subset_by}
-        # If subset_by is a dict, it should be of format address: buffer, with the 
-        # buffer specified in meters
         elif type(subset_by) is dict:
-            # We need to iterate through the key/value pairs, geocoding 
-            # each one
             buffers = []
             for i, j in subset_by.items():
-                g = geocode(address = i, as_gdf = True, limit = 1)
-                g_buffer = g.to_crs('ESRI:102010').buffer(distance = j)
+                g = geocode(address=i, as_gdf=True, limit=1)
+                g_buffer = g.to_crs('ESRI:102010').buffer(distance=j)
                 buffers.append(g_buffer)
             
             buffer_gdf = pd.concat(buffers)
-
             sub = {"mask": buffer_gdf}
-
-
-    if not cache:
-        if subset_by is not None:
-            tiger_data = gp.read_file(url, **sub)
-        else:
-            tiger_data = gp.read_file(url)
-
-        return tiger_data
-    else:
+    
+    # Determine where to save the file
+    if cache:
         cache_dir = appdirs.user_cache_dir("pygris")
-
         if not os.path.isdir(cache_dir):
-            os.makedirs(cache_dir) 
-
+            os.makedirs(cache_dir)
         basename = os.path.basename(url)
-
-        out_file = os.path.join(cache_dir, basename)
+        file_path = os.path.join(cache_dir, basename)
+    else:
+        # Use a temporary directory if not caching
+        tmp_dir = tempfile.gettempdir()
+        basename = os.path.basename(url)
+        file_path = os.path.join(tmp_dir, basename)
+    
+    # Download the file if it doesn't exist (or if not using cache)
+    download_needed = not os.path.isfile(file_path) if cache else True
+    
+    if download_needed:
+        download_success = False
         
-        # If the file doesn't exist, you'll need to download it
-        # and write it to the cache directory
-        if not os.path.isfile(out_file):
-            req = requests.get(url = url)
-
-            with open(out_file, 'wb') as fd:
-                fd.write(req.content)
+        # Parse the URL to determine protocol and path
+        parsed_url = urlparse(url)
+        is_ftp = parsed_url.scheme == 'ftp'
         
-        # Now, read in the file from the cache directory
+        # Try with the primary protocol
+        try:
+            if is_ftp:
+                # Handle FTP download with ftplib
+                ftp_host = parsed_url.netloc
+                ftp_path = os.path.dirname(parsed_url.path)
+                filename = os.path.basename(parsed_url.path)
+                
+                print(f"Downloading {filename} from Census FTP...")
+                ftp = ftplib.FTP(ftp_host)
+                ftp.login()  # anonymous login
+                ftp.cwd(ftp_path)
+                
+                with open(file_path, 'wb') as f:
+                    ftp.retrbinary(f'RETR {filename}', f.write)
+                
+                ftp.quit()
+                download_success = True
+            else:
+                # Handle HTTP download with requests
+                req = requests.get(url=url, timeout=timeout)
+                req.raise_for_status()  # Raise an exception for HTTP errors
+                
+                with open(file_path, 'wb') as fd:
+                    fd.write(req.content)
+                download_success = True
+                
+        except Exception as e:
+            # If HTTP fails and we're using HTTP, try FTP as fallback
+            if protocol == "http" and not is_ftp:
+                print("HTTP download failed, trying FTP as fallback...")
+                ftp_url = original_url.replace("https://www2", "ftp://ftp2")
+                
+                try:
+                    # Parse the FTP URL
+                    parsed_ftp = urlparse(ftp_url)
+                    ftp_host = parsed_ftp.netloc
+                    ftp_path = os.path.dirname(parsed_ftp.path)
+                    filename = os.path.basename(parsed_ftp.path)
+                    
+                    # Connect to FTP and download
+                    print(f"Downloading {filename} from Census FTP...")
+                    ftp = ftplib.FTP(ftp_host)
+                    ftp.login()  # anonymous login
+                    ftp.cwd(ftp_path)
+                    
+                    with open(file_path, 'wb') as f:
+                        ftp.retrbinary(f'RETR {filename}', f.write)
+                    
+                    ftp.quit()
+                    download_success = True
+                    
+                except Exception as e2:
+                    download_success = False
+        
+        # If both HTTP and FTP failed, raise an error
+        if not download_success:
+            raise ValueError(
+                "Download failed with both HTTP and FTP; check your internet connection or the status of the Census Bureau website "
+                "at https://www2.census.gov/geo/tiger/ or ftp://ftp2.census.gov/geo/tiger/."
+            )
+    
+    # Read the file from the local filesystem
+    try:
         if subset_by is not None:
-            tiger_data = gp.read_file(out_file, **sub)
+            tiger_data = gp.read_file(file_path, **sub)
         else:
-            tiger_data = gp.read_file(out_file)
-
-        return tiger_data         
+            tiger_data = gp.read_file(file_path)
+        
+        # Clean up temporary file if not caching
+        if not cache and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+            except:
+                pass  # Ignore errors in cleanup
+                
+        return tiger_data
+    
+    except Exception as e:
+        # If the file is corrupted, remove it and try downloading again
+        if cache and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                print("Cached file may be corrupted. Downloading again...")
+                return _load_tiger(original_url, cache=cache, subset_by=subset_by, protocol=protocol, timeout=timeout)
+            except:
+                pass
+        raise e
 
 def fips_codes():
     path = fips_path()

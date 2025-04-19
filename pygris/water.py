@@ -4,7 +4,7 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 
 from .helpers import _load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
-def area_water(state, county, year = None, cache = False, subset_by = None):
+def area_water(state, county, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load an area water shapefile into Python as a GeoDataFrame
 
@@ -36,6 +36,10 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -49,8 +53,8 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
 
     state = validate_state(state)
 
@@ -61,7 +65,7 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{i}_areawater.zip"
-            w = _load_tiger(url, cache = cache, subset_by = subset_by)
+            w = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
             county_water.append(w)
         
         all_w = pd.concat(county_water, ignore_index = True)
@@ -73,13 +77,13 @@ def area_water(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/AREAWATER/tl_{year}_{state}{valid_county}_areawater.zip"
-        w = _load_tiger(url, cache = cache, subset_by = subset_by)
+        w = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return w
 
     
 
-def linear_water(state, county, year = None, cache = False, subset_by = None):
+def linear_water(state, county, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a linear water shapefile into Python as a GeoDataFrame
 
@@ -111,6 +115,10 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -125,8 +133,8 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
 
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
 
     state = validate_state(state)
 
@@ -137,7 +145,7 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{i}_linearwater.zip"
-            w = _load_tiger(url, cache = cache, subset_by = subset_by)
+            w = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
             county_water.append(w)
         
         all_w = pd.concat(county_water, ignore_index = True)
@@ -149,11 +157,11 @@ def linear_water(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/LINEARWATER/tl_{year}_{state}{valid_county}_linearwater.zip"
-        w = _load_tiger(url, cache = cache, subset_by = subset_by)
+        w = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return w
 
-def coastline(year = None, cache = False):
+def coastline(year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load an coastline shapefile into Python as a GeoDataFrame
 
@@ -165,6 +173,10 @@ def coastline(year = None, cache = False):
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
         
     Returns
     ----------
@@ -177,7 +189,7 @@ def coastline(year = None, cache = False):
     
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
 
     if year > 2016:
@@ -185,4 +197,4 @@ def coastline(year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COAST/tl_{year}_us_coastline.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)

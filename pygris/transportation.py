@@ -5,7 +5,7 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 from .helpers import _load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 
-def roads(state, county, year = None, cache = False, subset_by = None):
+def roads(state, county, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a roads shapefile into Python as a GeoDataFrame
@@ -38,6 +38,10 @@ def roads(state, county, year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -51,8 +55,8 @@ def roads(state, county, year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     state = validate_state(state)
 
@@ -63,7 +67,7 @@ def roads(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ROADS/tl_{year}_{state}{i}_roads.zip"
-            r = _load_tiger(url, cache = cache, subset_by = subset_by)
+            r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
             county_roads.append(r)
         
         all_r = pd.concat(county_roads, ignore_index = True)
@@ -75,12 +79,12 @@ def roads(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ROADS/tl_{year}_{state}{valid_county}_roads.zip"
-        r = _load_tiger(url, cache = cache, subset_by = subset_by)
+        r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return r
 
 
-def primary_roads(year = None, cache = False, subset_by = None):
+def primary_roads(year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a primary roads shapefile into Python as a GeoDataFrame
@@ -109,6 +113,10 @@ def primary_roads(year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -122,16 +130,16 @@ def primary_roads(year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PRIMARYROADS/tl_{year}_us_primaryroads.zip"
-    r = _load_tiger(url, cache = cache, subset_by = subset_by)
+    r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     return r
 
 
-def primary_secondary_roads(state, year = None, cache = False, subset_by = None):
+def primary_secondary_roads(state, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a primary & secondary roads shapefile into Python as a GeoDataFrame
@@ -162,6 +170,10 @@ def primary_secondary_roads(state, year = None, cache = False, subset_by = None)
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -175,19 +187,19 @@ def primary_secondary_roads(state, year = None, cache = False, subset_by = None)
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     state = validate_state(state)
     
     url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PRISECROADS/tl_{year}_{state}_prisecroads.zip"
 
-    r = _load_tiger(url, cache = cache, subset_by = subset_by)
+    r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     return r
 
 
-def rails(year = None, cache = False, subset_by = None):
+def rails(year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a railroads shapefile into Python as a GeoDataFrame
@@ -216,6 +228,10 @@ def rails(year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -229,16 +245,16 @@ def rails(year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     url = f"https://www2.census.gov/geo/tiger/TIGER{year}/RAILS/tl_{year}_us_rails.zip"
-    r = _load_tiger(url, cache = cache, subset_by = subset_by)
+    r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     return r
 
 
-def address_ranges(state, county, year = None, cache = False, subset_by = None):
+def address_ranges(state, county, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load an address ranges shapefile into Python as a GeoDataFrame
@@ -271,6 +287,10 @@ def address_ranges(state, county, year = None, cache = False, subset_by = None):
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
     
     Returns
     ----------
@@ -284,8 +304,8 @@ def address_ranges(state, county, year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     state = validate_state(state)
 
@@ -296,7 +316,7 @@ def address_ranges(state, county, year = None, cache = False, subset_by = None):
         
         for i in valid_county:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ADDRFEAT/tl_{year}_{state}{i}_addrfeat.zip"
-            r = _load_tiger(url, cache = cache, subset_by = subset_by)
+            r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
             county_ranges.append(r)
         
         all_r = pd.concat(county_ranges, ignore_index = True)
@@ -308,6 +328,6 @@ def address_ranges(state, county, year = None, cache = False, subset_by = None):
         valid_county = validate_county(state, county)
     
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ADDRFEAT/tl_{year}_{state}{valid_county}_addrfeat.zip"
-        r = _load_tiger(url, cache = cache, subset_by = subset_by)
+        r = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return r

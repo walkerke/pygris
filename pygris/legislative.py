@@ -5,7 +5,7 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 from pygris.helpers import _load_tiger, validate_state, validate_county
 
 def congressional_districts(state = None, cb = False, resolution = "500k", year = None,
-                            cache = False, subset_by = None):
+                            cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a congressional districts shapefile into Python as a GeoDataFrame
@@ -25,7 +25,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -46,6 +46,10 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -60,7 +64,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
     """
 
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if cb and year < 2013:
@@ -93,7 +97,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_us_cd{congress}.zip"
     
 
-    cds = _load_tiger(url, cache = cache, subset_by = subset_by)
+    cds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if state is not None:
         if type(state) is not list:
@@ -105,7 +109,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         
 
 def state_legislative_districts(state = None, house = "upper", cb = False,
-                                year = None, cache = False, subset_by = None):
+                                year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a state legislative districts shapefile into Python as a GeoDataFrame
 
@@ -123,7 +127,7 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         Defaults to False (the regular TIGER/Line file).
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -144,6 +148,10 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -158,7 +166,7 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
     """
     
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
 
@@ -196,13 +204,13 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
-    stateleg = _load_tiger(url, cache = cache, subset_by = subset_by)
+    stateleg = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     return stateleg
 
     
 def voting_districts(state = None, county = None, cb = False,
-                     year = 2020, cache = False, subset_by = None):
+                     year = 2020, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
      Load a voting districts shapefile into Python as a GeoDataFrame
 
@@ -241,6 +249,10 @@ def voting_districts(state = None, county = None, cb = False,
             * A dict of format {"address": "buffer_distance"} will return rows
             that intersect a buffer of a given distance (in meters) around an 
             input address.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -270,7 +282,7 @@ def voting_districts(state = None, county = None, cb = False,
     if cb:
         url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
 
-        vtds = _load_tiger(url, cache = cache, subset_by = subset_by)
+        vtds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         if county is None:
             return vtds
@@ -291,6 +303,6 @@ def voting_districts(state = None, county = None, cb = False,
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
         
-        vtds = _load_tiger(url, cache = cache, subset_by = subset_by)
+        vtds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return vtds
