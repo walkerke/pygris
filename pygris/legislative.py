@@ -12,40 +12,40 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
 
     Parameters
     ----------
-    state : str 
-        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state.
         If None (the default), congressional districts for the entire United States
-        will be downloaded.  
-    cb : bool 
-        If set to True, download a generalized (1:500k) cartographic boundary file.  
+        will be downloaded.
+    cb : bool
+        If set to True, download a generalized (1:500k) cartographic boundary file.
         Defaults to False (the regular TIGER/Line file).
-    resolution : str 
-        The resolution of the cartographic boundary file; only applies if 
+    resolution : str
+        The resolution of the cartographic boundary file; only applies if
         the cb argument is set to True. The default is "500k"; options also
-        include "5m" (1:5 million) and "20m" (1:20 million)    
-    year : int 
+        include "5m" (1:5 million) and "20m" (1:20 million)
+    year : int
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2024.
-    cache : bool 
-        If True, the function will download a Census shapefile to a cache directory 
+    cache : bool
+        If True, the function will download a Census shapefile to a cache directory
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.      
+        the shapefile directly from the Census website.
     subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
-        An optional directive telling pygris to return a subset of data using 
-        underlying arguments in geopandas.read_file().  
+        An optional directive telling pygris to return a subset of data using
+        underlying arguments in geopandas.read_file().
         subset_by operates as follows:
-            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy),
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
             * If a user supplies an object of type geopandas.GeoDataFrame
-            or of type geopandas.GeoSeries, rows that intersect the input 
-            object will be returned. CRS misalignment will be resolved 
-            internally.  
+            or of type geopandas.GeoSeries, rows that intersect the input
+            object will be returned. CRS misalignment will be resolved
+            internally.
             * A dict of format {"address": "buffer_distance"} will return rows
-            that intersect a buffer of a given distance (in meters) around an 
-            input address.  
+            that intersect a buffer of a given distance (in meters) around an
+            input address.
     protocol : str
         The protocol to use for downloading the file. Defaults to "http".
     timeout : int
@@ -58,7 +58,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
 
     Notes
     ----------
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/congressional-dist.html for more information. 
+    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/congressional-dist.html for more information.
 
 
     """
@@ -66,15 +66,17 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
     if year is None:
         year = 2024
         print(f"Using the default year of {year}")
-    
+
     if cb and year < 2013:
         raise ValueError("`cb = True` for congressional districts is unavailable prior to 2013.")
 
     if resolution not in ['500k', '5m', '20m']:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
 
-    if year in range(2018, 2023):
+    if year in range(2018, 2022):
         congress = "116"
+    elif year in [2022, 2023]:
+        congress = "118"
     elif year in [2016, 2017]:
         congress = "115"
     elif year in [2014, 2015]:
@@ -85,9 +87,11 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         congress = "112"
     elif year == 2010:
         congress = "111"
+    elif year in range(2023, 2026):
+        congress = "119"
     else:
         raise ValueError(f"Congressional districts are not available from pygris for {year}.")
-    
+
     if cb:
         if year == 2013:
             url = f"https://www2.census.gov/geo/tiger/GENZ{year}/cb_{year}_us_cd{congress}_{resolution}.zip"
@@ -95,7 +99,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
             url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_cd{congress}_{resolution}.zip"
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_us_cd{congress}.zip"
-    
+
 
     cds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
@@ -106,7 +110,7 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         cds = cds.query('STATEFP in @valid_state')
 
     return cds
-        
+
 
 def state_legislative_districts(state = None, house = "upper", cb = False,
                                 year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
@@ -115,39 +119,39 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
 
     Parameters
     ----------
-    state : str 
-        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state.
         If None, state legislative districts for the entire United States
-        will be downloaded when cb is True and the year is 2019 or later.  
-    house : str 
-        Specify here whether you want boundaries for the "upper" or "lower" house. 
+        will be downloaded when cb is True and the year is 2019 or later.
+    house : str
+        Specify here whether you want boundaries for the "upper" or "lower" house.
         Note: Nebraska has a unicameral legislature, so only "upper" will work for Nebraska.
-    cb : bool 
-        If set to True, download a generalized (1:500k) cartographic boundary file.  
+    cb : bool
+        If set to True, download a generalized (1:500k) cartographic boundary file.
         Defaults to False (the regular TIGER/Line file).
-    year : int 
+    year : int
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
         defaults to 2024.
-    cache : bool 
-        If True, the function will download a Census shapefile to a cache directory 
+    cache : bool
+        If True, the function will download a Census shapefile to a cache directory
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.  
+        the shapefile directly from the Census website.
     subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
-        An optional directive telling pygris to return a subset of data using 
-        underlying arguments in geopandas.read_file().  
+        An optional directive telling pygris to return a subset of data using
+        underlying arguments in geopandas.read_file().
         subset_by operates as follows:
-            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy),
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
             * If a user supplies an object of type geopandas.GeoDataFrame
-            or of type geopandas.GeoSeries, rows that intersect the input 
-            object will be returned. CRS misalignment will be resolved 
-            internally.  
+            or of type geopandas.GeoSeries, rows that intersect the input
+            object will be returned. CRS misalignment will be resolved
+            internally.
             * A dict of format {"address": "buffer_distance"} will return rows
-            that intersect a buffer of a given distance (in meters) around an 
-            input address.  
+            that intersect a buffer of a given distance (in meters) around an
+            input address.
     protocol : str
         The protocol to use for downloading the file. Defaults to "http".
     timeout : int
@@ -160,15 +164,15 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
 
     Notes
     ----------
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/state-legis-dist.html for more information. 
+    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/state-legis-dist.html for more information.
 
 
     """
-    
+
     if year is None:
         year = 2024
         print(f"Using the default year of {year}")
-    
+
 
     if state is None:
         if year > 2018 and cb:
@@ -181,13 +185,13 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
 
     if house not in ["upper", "lower"]:
         raise ValueError("You must specify either 'upper' or 'lower' as an argument for house.")
-    
+
     if house == "lower":
         type = "sldl"
     else:
         type = "sldu"
 
-    
+
     if cb:
         if year == 2010:
             if type == "sldu":
@@ -208,7 +212,7 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
 
     return stateleg
 
-    
+
 def voting_districts(state = None, county = None, cb = False,
                      year = 2020, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
@@ -216,39 +220,39 @@ def voting_districts(state = None, county = None, cb = False,
 
     Parameters
     ----------
-    state : str 
-        The state name, state abbreviation, or two-digit FIPS code of the desired state. 
+    state : str
+        The state name, state abbreviation, or two-digit FIPS code of the desired state.
         If None, voting districts for the entire United States
-        will be downloaded when cb is True and the year is 2020.  
-    county : str 
+        will be downloaded when cb is True and the year is 2020.
+    county : str
         The county name or three-digit FIPS code of the desired county. If None, voting
-        districts for the selected state will be downloaded. 
-    cb : bool 
-        If set to True, download a generalized (1:500k) cartographic boundary file.  
+        districts for the selected state will be downloaded.
+    cb : bool
+        If set to True, download a generalized (1:500k) cartographic boundary file.
         Defaults to False (the regular TIGER/Line file).
     year : int
-        The year of the TIGER/Line or cartographic boundary shapefile. Available years 
+        The year of the TIGER/Line or cartographic boundary shapefile. Available years
         for voting districts are 2020 (for 2020 districts) and 2012 (for 2010 districts).
     cache : bool
-        If True, the function will download a Census shapefile to a cache directory 
+        If True, the function will download a Census shapefile to a cache directory
         on the user's computer for future access.  If False, the function will load
-        the shapefile directly from the Census website.      
+        the shapefile directly from the Census website.
     subset_by : tuple, int, slice, dict, geopandas.GeoDataFrame, or geopandas.GeoSeries
-        An optional directive telling pygris to return a subset of data using 
-        underlying arguments in geopandas.read_file().  
+        An optional directive telling pygris to return a subset of data using
+        underlying arguments in geopandas.read_file().
         subset_by operates as follows:
-            * If a user supplies a tuple of format (minx, miny, maxx, maxy), 
+            * If a user supplies a tuple of format (minx, miny, maxx, maxy),
             it will be interpreted as a bounding box and rows will be returned
             that intersect that bounding box;
             * If a user supplies a integer or a slice object, the first n rows
             (or the rows defined by the slice object) will be returned;
             * If a user supplies an object of type geopandas.GeoDataFrame
-            or of type geopandas.GeoSeries, rows that intersect the input 
-            object will be returned. CRS misalignment will be resolved 
-            internally.  
+            or of type geopandas.GeoSeries, rows that intersect the input
+            object will be returned. CRS misalignment will be resolved
+            internally.
             * A dict of format {"address": "buffer_distance"} will return rows
-            that intersect a buffer of a given distance (in meters) around an 
-            input address.  
+            that intersect a buffer of a given distance (in meters) around an
+            input address.
     protocol : str
         The protocol to use for downloading the file. Defaults to "http".
     timeout : int
@@ -261,14 +265,14 @@ def voting_districts(state = None, county = None, cb = False,
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch14GARM.pdf for more information.    
-    
-    
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch14GARM.pdf for more information.
+
+
     """
-    
+
     if year != 2020 and cb:
         raise ValueError("Cartographic boundary voting district files are only available for 2020.")
-    
+
     if state is None:
         if year > 2018 and cb:
             state = "us"
@@ -277,7 +281,7 @@ def voting_districts(state = None, county = None, cb = False,
             raise ValueError("A state must be specified for this year/dataset combination.")
     else:
         state = validate_state(state)
-    
+
 
     if cb:
         url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
@@ -291,7 +295,7 @@ def voting_districts(state = None, county = None, cb = False,
                 county = [county]
                 valid_county = [validate_county(state, x) for x in county]
                 vtds = vtds.query('COUNTYFP20 in @valid_county')
-            
+
             return vtds
     else:
         if year == 2012:
@@ -302,7 +306,7 @@ def voting_districts(state = None, county = None, cb = False,
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}{county}_vtd20.zip"
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
-        
+
         vtds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
         return vtds
