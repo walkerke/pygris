@@ -15,6 +15,9 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dynamic = ["dependencies"]
+dependencies = [
+    "mkdocstrings[python]>=0.18",
+]
 
 [project.urls]
 "Homepage" = "https://github.com/walkerke/pygris"
