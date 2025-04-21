@@ -5,7 +5,7 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 from .helpers import _load_tiger, validate_state, validate_county, fips_codes
 import pandas as pd
 
-def counties(state = None, cb = False, resolution = '500k', year = None, cache = False, subset_by = None):
+def counties(state = None, cb = False, resolution = '500k', year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a counties shapefile into Python as a GeoDataFrame
 
@@ -24,7 +24,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -58,8 +58,8 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
 
     """
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     if resolution not in ['500k', '5m', '20m']:
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
@@ -84,7 +84,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUNTY/tl_{year}_us_county.zip"
 
-    ctys = _load_tiger(url, cache = cache, subset_by = subset_by)
+    ctys = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if state is not None:
         if type(state) is not list:
@@ -102,7 +102,7 @@ def counties(state = None, cb = False, resolution = '500k', year = None, cache =
 
     return ctys
 
-def tracts(state = None, county = None, cb = False, year = None, cache = False, subset_by = None):
+def tracts(state = None, county = None, cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
      Load a Census tracts shapefile into Python as a GeoDataFrame
 
@@ -153,8 +153,8 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
     
     """
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
 
     if state is None:
         if year > 2018 and cb is True:
@@ -184,7 +184,7 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TRACT/tl_{year}_{state}_tract.zip"
 
-    trcts = _load_tiger(url, cache = cache, subset_by = subset_by)
+    trcts = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if county is not None:
         if type(county) is not list:
@@ -195,7 +195,7 @@ def tracts(state = None, county = None, cb = False, year = None, cache = False, 
     return trcts
 
 
-def block_groups(state = None, county = None, cb = False, year = None, cache = False, subset_by = None):
+def block_groups(state = None, county = None, cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
      Load a Census block groups shapefile into Python as a GeoDataFrame
 
@@ -246,8 +246,8 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
     
     """
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
 
     if state is None:
         if year > 2018 and cb is True:
@@ -277,7 +277,7 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/BG/tl_{year}_{state}_bg.zip"
 
-    bgs = _load_tiger(url, cache = cache, subset_by = subset_by)
+    bgs = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if county is not None:
         if type(county) is not list:
@@ -288,7 +288,7 @@ def block_groups(state = None, county = None, cb = False, year = None, cache = F
     return bgs
 
 
-def school_districts(state = None, type = "unified", cb = False, year = None, cache = False, subset_by = None):
+def school_districts(state = None, type = "unified", cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a school districts shapefile into Python as a GeoDataFrame
 
@@ -338,8 +338,8 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
 
     """
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
 
     if state is None:
         if year > 2018 and cb is True:
@@ -365,10 +365,10 @@ def school_districts(state = None, type = "unified", cb = False, year = None, ca
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
     
-    return _load_tiger(url, cache = cache, subset_by = subset_by)
+    return _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
 
-def states(cb = True, resolution = "500k", year = None, cache = False):
+def states(cb = True, resolution = "500k", year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a states shapefile into Python as a GeoDataFrame
 
@@ -383,7 +383,7 @@ def states(cb = True, resolution = "500k", year = None, cache = False):
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -405,8 +405,8 @@ def states(cb = True, resolution = "500k", year = None, cache = False):
         raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
     
     if year is None:
-        print("Using the default year of 2021")
-        year = 2021
+        print("Using the default year of 2024")
+        year = 2024
     
     if cb:
         if year in [1990, 2000]:
@@ -428,9 +428,9 @@ def states(cb = True, resolution = "500k", year = None, cache = False):
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/STATE/tl_{year}_us_state.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
-def pumas(state = None, cb = False, year = None, cache = False, subset_by = None):
+def pumas(state = None, cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a public use microdata area (PUMA) shapefile into Python as a GeoDataFrame
 
@@ -445,7 +445,7 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
         Defaults to False (the regular TIGER/Line file).  
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -483,7 +483,7 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
     """
     
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if state is None:
@@ -496,7 +496,7 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
             print("Retrieving PUMAs by state and combining the result")
             all_states = [code for code in fips['state_code'].unique().tolist() if code <= "56"]
 
-            all_pumas = pd.concat([pumas(x, year = year, cache = cache) for x in all_states])
+            all_pumas = pd.concat([pumas(x, year = year, cache = cache, protocol = protocol, timeout = timeout) for x in all_states])
 
             return all_pumas
     else:
@@ -519,12 +519,12 @@ def pumas(state = None, cb = False, year = None, cache = False, subset_by = None
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PUMA/tl_{year}_{state}_puma{suf}.zip"
 
-    pm = _load_tiger(url, cache = cache, subset_by = subset_by)
+    pm = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     return pm
 
     
-def places(state = None, cb = False, year = None, cache = False, subset_by = None):
+def places(state = None, cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a Census-designated places shapefile into Python as a GeoDataFrame
@@ -540,7 +540,7 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
         Defaults to False (the regular TIGER/Line file). 
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
@@ -574,7 +574,7 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
     """
 
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if state is None:
@@ -593,10 +593,10 @@ def places(state = None, cb = False, year = None, cache = False, subset_by = Non
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/PLACE/tl_{year}_{state}_place.zip"
 
-    return _load_tiger(url, cache = cache, subset_by = subset_by)
+    return _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
 
-def zctas(cb = False, starts_with = None, year = None, state = None, cache = False, subset_by = None):
+def zctas(cb = False, starts_with = None, year = None, state = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
 
     """
     Load a zip code tabulation areas (ZCTAs) shapefile into Python as a GeoDataFrame
@@ -611,7 +611,7 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
         ZCTAs to be returned by the function.  
     year : int
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     state : str
         The state name, state abbreviation, or two-digit FIPS code of the desired state. 
         If None (the default), ZCTAs for the entire United States
@@ -654,7 +654,7 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
     """
 
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if state is not None and year > 2010:
@@ -702,7 +702,7 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER{year}/ZCTA5/tl_{year}_us_zcta510.zip"
     
-    zcta = _load_tiger(url, cache = cache, subset_by = subset_by)
+    zcta = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if starts_with is not None:
         cols = zcta.columns.tolist()
@@ -724,7 +724,7 @@ def zctas(cb = False, starts_with = None, year = None, state = None, cache = Fal
         return zcta
         
 
-def blocks(state, county = None, year = None, cache = False, subset_by = None):
+def blocks(state, county = None, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
      Load a Census blocks shapefile into Python as a GeoDataFrame
 
@@ -770,7 +770,7 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
     """
 
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
 
     if year == 1990:
@@ -796,7 +796,7 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/TABBLOCK20/tl_{year}_{state}_tabblock20.zip"
 
-    blks = _load_tiger(url, cache = cache, subset_by = subset_by)
+    blks = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if county is not None and year > 2010:
         if year > 2019:
@@ -813,7 +813,7 @@ def blocks(state, county = None, year = None, cache = False, subset_by = None):
     return blks
 
 
-def county_subdivisions(state, county = None, cb = False, year = None, cache = False, subset_by = None):
+def county_subdivisions(state, county = None, cb = False, year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
     """
     Load a county subdivisions shapefile into Python as a GeoDataFrame
 
@@ -865,7 +865,7 @@ def county_subdivisions(state, county = None, cb = False, year = None, cache = F
     """
 
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     state = validate_state(state)
@@ -883,7 +883,7 @@ def county_subdivisions(state, county = None, cb = False, year = None, cache = F
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/COUSUB/tl_{year}_{state}_cousub.zip"
     
-    cs = _load_tiger(url, cache = cache, subset_by = subset_by)
+    cs = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
 
     if county is not None:
         if type(county) is not list:

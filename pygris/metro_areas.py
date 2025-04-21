@@ -4,7 +4,7 @@ __author__ = "Kyle Walker <kyle@walker-data.com"
 
 from pygris.helpers import _load_tiger
 
-def core_based_statistical_areas(cb = False, resolution = "500k", year = None, cache = False):
+def core_based_statistical_areas(cb = False, resolution = "500k", year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a core-based statistical areas shapefile into Python as a GeoDataFrame
 
@@ -19,11 +19,15 @@ def core_based_statistical_areas(cb = False, resolution = "500k", year = None, c
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -38,7 +42,7 @@ def core_based_statistical_areas(cb = False, resolution = "500k", year = None, c
 
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if resolution not in ["500k", "5m", "20m"]:
@@ -64,10 +68,10 @@ def core_based_statistical_areas(cb = False, resolution = "500k", year = None, c
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CBSA/tl_{year}_us_cbsa.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
 
-def urban_areas(cb = False, year = None, cache = False):
+def urban_areas(cb = False, year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a urbanized areas shapefile into Python as a GeoDataFrame
 
@@ -78,11 +82,15 @@ def urban_areas(cb = False, year = None, cache = False):
         Defaults to False (the regular TIGER/Line file).    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -97,7 +105,7 @@ def urban_areas(cb = False, year = None, cache = False):
 
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if cb:
@@ -108,10 +116,10 @@ def urban_areas(cb = False, year = None, cache = False):
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/UAC/tl_{year}_us_uac10.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
 
-def combined_statistical_areas(cb = False, resolution = "500k", year = None, cache = False):
+def combined_statistical_areas(cb = False, resolution = "500k", year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a combined statistical areas shapefile into Python as a GeoDataFrame
 
@@ -126,11 +134,15 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -144,7 +156,7 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
 
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if resolution not in ["500k", "5m", "20m"]:
@@ -158,10 +170,10 @@ def combined_statistical_areas(cb = False, resolution = "500k", year = None, cac
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CSA/tl_{year}_us_csa.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
 
-def metro_divisions(cb = False, resolution = "500k", year = None, cache = False):
+def metro_divisions(cb = False, resolution = "500k", year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a metropolitan divisions shapefile into Python as a GeoDataFrame
 
@@ -176,11 +188,15 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -194,7 +210,7 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
 
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if resolution not in ["500k", "5m", "20m"]:
@@ -211,10 +227,10 @@ def metro_divisions(cb = False, resolution = "500k", year = None, cache = False)
     else:
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/METDIV/tl_{year}_us_metdiv.zip"
     
-    return _load_tiger(url, cache = cache)
+    return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
 
-def new_england(type = "necta", cb = False, year = None, cache = False):
+def new_england(type = "necta", cb = False, year = None, cache = False, protocol = "http", timeout = 1800):
     """
     Load a metropolitan divisions shapefile into Python as a GeoDataFrame
 
@@ -229,11 +245,15 @@ def new_england(type = "necta", cb = False, year = None, cache = False):
         include "5m" (1:5 million) and "20m" (1:20 million)    
     year : int 
         The year of the TIGER/Line or cartographic boundary shapefile. If not specified,
-        defaults to 2021.
+        defaults to 2024.
     cache : bool 
         If True, the function will download a Census shapefile to a cache directory 
         on the user's computer for future access.  If False, the function will load
         the shapefile directly from the Census website.  
+    protocol : str
+        The protocol to use for downloading the file. Defaults to "http".
+    timeout : int
+        The timeout for the download request in seconds. Defaults to 1800 (30 minutes).
 
     Returns
     ----------
@@ -247,7 +267,7 @@ def new_england(type = "necta", cb = False, year = None, cache = False):
 
     """
     if year is None:
-        year = 2021
+        year = 2024
         print(f"Using the default year of {year}")
     
     if type == "necta":
@@ -256,17 +276,17 @@ def new_england(type = "necta", cb = False, year = None, cache = False):
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTA/tl_{year}_us_necta.zip"
 
-        return _load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
     elif type == "combined":
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CNECTA/tl_{year}_us_cnecta.zip"
 
-        return _load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
     elif type == "divisions":
         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/NECTADIV/tl_{year}_us_nectadiv.zip"
 
-        return _load_tiger(url, cache = cache)
+        return _load_tiger(url, cache = cache, protocol = protocol, timeout = timeout)
 
     else:
         raise ValueError("Invalid NECTA type; valid values include 'necta' (the default), 'combined', and 'divisions'.")
