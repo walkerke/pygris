@@ -71,10 +71,7 @@ def get_census(
     if type(variables) is not list:
         variables = [variables]
 
-    if year is None:
-        base = f"{endpoint}/{dataset}"
-    else:
-        base = f"{endpoint}/{year}/{dataset}"
+    base = f"{endpoint}/{dataset}" if year is None else f"{endpoint}/{year}/{dataset}"
 
     # get request must be <50, split it and run each chunk (adapted from cenpy)
     data = []

@@ -1,3 +1,4 @@
+import contextlib
 import ftplib
 import os
 import tempfile
@@ -154,10 +155,8 @@ def _load_tiger(url, cache=False, subset_by=None, protocol="http", timeout=1800)
 
         # Clean up temporary file if not caching
         if not cache and os.path.exists(file_path):
-            try:
+            with contextlib.suppress(Exception):
                 os.remove(file_path)
-            except Exception:
-                pass  # Ignore errors in cleanup
 
         return tiger_data
 

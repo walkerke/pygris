@@ -215,10 +215,7 @@ def state_legislative_districts(
             "You must specify either 'upper' or 'lower' as an argument for house."
         )
 
-    if house == "lower":
-        type = "sldl"
-    else:
-        type = "sldu"
+    type = "sldl" if house == "lower" else "sldu"
 
     if cb:
         if year == 2010:

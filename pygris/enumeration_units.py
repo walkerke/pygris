@@ -579,10 +579,7 @@ def pumas(
     else:
         state = validate_state(state)
 
-    if year > 2021:
-        suf = "20"
-    else:
-        suf = "10"
+    suf = "20" if year > 2021 else "10"
 
     if cb:
         if year in [2020, 2021]:
