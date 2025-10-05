@@ -31,3 +31,18 @@ exclude = ["site"]
 
 [tool.setuptools.package-data]
 "pygris" = ["internals/*.csv"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+[tool.ruff.lint]
+select = [
+    # "A",
+    "B", "C4", "DOC", "E", "F", "I", "PD", "RUF", "SIM",
+    # "T20",
+    "UP", "W",
+]
+pydocstyle.convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+"pygris/__init__.py" = ["F403"]
