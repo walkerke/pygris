@@ -36,7 +36,11 @@ exclude = ["site"]
 docstring-code-format = true
 
 [tool.ruff.lint]
-select = ["DOC", "RUF", "F", "B", "I", "E", "W", "PD"]
+select = [
+#"A",
+"B", "C4", "DOC", "E", "F", "I", "PD", "RUF", "SIM",
+    # "T20",
+"UP", "W"]
 pydocstyle.convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
