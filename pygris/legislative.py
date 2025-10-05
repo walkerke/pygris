@@ -3,11 +3,20 @@
 __author__ = "Kyle Walker <kyle@walker-data.com"
 
 import pandas as pd
-from pygris.helpers import _load_tiger, validate_state, validate_county, fips_codes
 
-def congressional_districts(state = None, cb = False, resolution = "500k", year = None,
-                            cache = False, subset_by = None, protocol = "http", timeout = 1800):
+from pygris.helpers import _load_tiger, fips_codes, validate_county, validate_state
 
+
+def congressional_districts(
+    state=None,
+    cb=False,
+    resolution="500k",
+    year=None,
+    cache=False,
+    subset_by=None,
+    protocol="http",
+    timeout=1800,
+):
     """
     Load a congressional districts shapefile into Python as a GeoDataFrame
 
@@ -69,10 +78,14 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         print(f"Using the default year of {year}")
 
     if cb and year < 2013:
-        raise ValueError("`cb = True` for congressional districts is unavailable prior to 2013.")
+        raise ValueError(
+            "`cb = True` for congressional districts is unavailable prior to 2013."
+        )
 
-    if resolution not in ['500k', '5m', '20m']:
-        raise ValueError("Invalid value for resolution. Valid values are '500k', '5m', and '20m'.")
+    if resolution not in ["500k", "5m", "20m"]:
+        raise ValueError(
+            "Invalid value for resolution. Valid values are '500k', '5m', and '20m'."
+        )
 
     if year in range(2018, 2022):
         congress = "116"
@@ -91,7 +104,9 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
     elif year in range(2023, 2026):
         congress = "119"
     else:
-        raise ValueError(f"Congressional districts are not available from pygris for {year}.")
+        raise ValueError(
+            f"Congressional districts are not available from pygris for {year}."
+        )
 
     if cb:
         # Cartographic boundary files are still available as national files
@@ -100,13 +115,15 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
         else:
             url = f"https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_cd{congress}_{resolution}.zip"
 
-        cds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+        cds = _load_tiger(
+            url, cache=cache, subset_by=subset_by, protocol=protocol, timeout=timeout
+        )
 
         if state is not None:
             if type(state) is not list:
                 state = [state]
             valid_state = [validate_state(x) for x in state]
-            cds = cds.query('STATEFP in @valid_state')
+            cds = cds.query("STATEFP in @valid_state")
     else:
         # TIGER/Line files: 2024+ are state-specific, earlier years are national
         if year >= 2024:
@@ -119,43 +136,69 @@ def congressional_districts(state = None, cb = False, resolution = "500k", year 
                 cds_list = []
                 for st in valid_states:
                     url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_{st}_cd{congress}.zip"
-                    cds_state = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+                    cds_state = _load_tiger(
+                        url,
+                        cache=cache,
+                        subset_by=subset_by,
+                        protocol=protocol,
+                        timeout=timeout,
+                    )
                     cds_list.append(cds_state)
 
-                cds = pd.concat(cds_list, ignore_index = True)
+                cds = pd.concat(cds_list, ignore_index=True)
             else:
                 # Download all states
                 print("Downloading congressional districts for all states...")
                 all_fips = fips_codes()
-                state_fips = all_fips['state_code'].unique()
+                state_fips = all_fips["state_code"].unique()
 
                 cds_list = []
                 for st in state_fips:
                     try:
                         url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_{st}_cd{congress}.zip"
-                        cds_state = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+                        cds_state = _load_tiger(
+                            url,
+                            cache=cache,
+                            subset_by=subset_by,
+                            protocol=protocol,
+                            timeout=timeout,
+                        )
                         cds_list.append(cds_state)
                     except Exception:
                         # Some states/territories may not have congressional districts
                         pass
 
-                cds = pd.concat(cds_list, ignore_index = True)
+                cds = pd.concat(cds_list, ignore_index=True)
         else:
             # Pre-2024: national file available
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/CD/tl_{year}_us_cd{congress}.zip"
-            cds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+            cds = _load_tiger(
+                url,
+                cache=cache,
+                subset_by=subset_by,
+                protocol=protocol,
+                timeout=timeout,
+            )
 
             if state is not None:
                 if type(state) is not list:
                     state = [state]
                 valid_state = [validate_state(x) for x in state]
-                cds = cds.query('STATEFP in @valid_state')
+                cds = cds.query("STATEFP in @valid_state")
 
     return cds
 
 
-def state_legislative_districts(state = None, house = "upper", cb = False,
-                                year = None, cache = False, subset_by = None, protocol = "http", timeout = 1800):
+def state_legislative_districts(
+    state=None,
+    house="upper",
+    cb=False,
+    year=None,
+    cache=False,
+    subset_by=None,
+    protocol="http",
+    timeout=1800,
+):
     """
     Load a state legislative districts shapefile into Python as a GeoDataFrame
 
@@ -215,24 +258,28 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         year = 2024
         print(f"Using the default year of {year}")
 
-
     if state is None:
         if year > 2018 and cb:
             state = "us"
-            print("Retrieving state legislative districts for the entire United States.")
+            print(
+                "Retrieving state legislative districts for the entire United States."
+            )
         else:
-            raise ValueError("A state must be specified for this year/dataset combination.")
+            raise ValueError(
+                "A state must be specified for this year/dataset combination."
+            )
     else:
         state = validate_state(state)
 
     if house not in ["upper", "lower"]:
-        raise ValueError("You must specify either 'upper' or 'lower' as an argument for house.")
+        raise ValueError(
+            "You must specify either 'upper' or 'lower' as an argument for house."
+        )
 
     if house == "lower":
         type = "sldl"
     else:
         type = "sldu"
-
 
     if cb:
         if year == 2010:
@@ -250,13 +297,23 @@ def state_legislative_districts(state = None, house = "upper", cb = False,
         else:
             url = f"https://www2.census.gov/geo/tiger/TIGER{year}/{type.upper()}/tl_{year}_{state}_{type}.zip"
 
-    stateleg = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+    stateleg = _load_tiger(
+        url, cache=cache, subset_by=subset_by, protocol=protocol, timeout=timeout
+    )
 
     return stateleg
 
 
-def voting_districts(state = None, county = None, cb = False,
-                     year = 2020, cache = False, subset_by = None, protocol = "http", timeout = 1800):
+def voting_districts(
+    state=None,
+    county=None,
+    cb=False,
+    year=2020,
+    cache=False,
+    subset_by=None,
+    protocol="http",
+    timeout=1800,
+):
     """
      Load a voting districts shapefile into Python as a GeoDataFrame
 
@@ -313,22 +370,27 @@ def voting_districts(state = None, county = None, cb = False,
     """
 
     if year != 2020 and cb:
-        raise ValueError("Cartographic boundary voting district files are only available for 2020.")
+        raise ValueError(
+            "Cartographic boundary voting district files are only available for 2020."
+        )
 
     if state is None:
         if year > 2018 and cb:
             state = "us"
             print("Retrieving voting districts for the entire United States")
         else:
-            raise ValueError("A state must be specified for this year/dataset combination.")
+            raise ValueError(
+                "A state must be specified for this year/dataset combination."
+            )
     else:
         state = validate_state(state)
-
 
     if cb:
         url = f"https://www2.census.gov/geo/tiger/GENZ2020/shp/cb_2020_{state}_vtd_500k.zip"
 
-        vtds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+        vtds = _load_tiger(
+            url, cache=cache, subset_by=subset_by, protocol=protocol, timeout=timeout
+        )
 
         if county is None:
             return vtds
@@ -336,7 +398,7 @@ def voting_districts(state = None, county = None, cb = False,
             if type(county) is not list:
                 county = [county]
                 valid_county = [validate_county(state, x) for x in county]
-                vtds = vtds.query('COUNTYFP20 in @valid_county')
+                vtds = vtds.query("COUNTYFP20 in @valid_county")
 
             return vtds
     else:
@@ -349,6 +411,8 @@ def voting_districts(state = None, county = None, cb = False,
             else:
                 url = f"https://www2.census.gov/geo/tiger/TIGER2020PL/LAYER/VTD/2020/tl_2020_{state}_vtd20.zip"
 
-        vtds = _load_tiger(url, cache = cache, subset_by = subset_by, protocol = protocol, timeout = timeout)
+        vtds = _load_tiger(
+            url, cache=cache, subset_by=subset_by, protocol=protocol, timeout=timeout
+        )
 
         return vtds
