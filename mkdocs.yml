@@ -2,11 +2,11 @@ site_name: pygris
 site_url: https://walker-data.com/pygris
 repo_url: https://github.com/walkerke/pygris
 
-theme: 
+theme:
   name: material
-  palette: 
+  palette:
     primary: black
-  icon: 
+  icon:
     repo: fontawesome/brands/github
   logo: img/tiger_map_small.png
   favicon: img/tiger_map_small.png
