@@ -37,10 +37,11 @@ docstring-code-format = true
 
 [tool.ruff.lint]
 select = [
-#"A",
-"B", "C4", "DOC", "E", "F", "I", "PD", "RUF", "SIM",
+    # "A",
+    "B", "C4", "DOC", "E", "F", "I", "PD", "RUF", "SIM",
     # "T20",
-"UP", "W"]
+    "UP", "W",
+]
 pydocstyle.convention = "numpy"
 
 [tool.ruff.lint.per-file-ignores]
