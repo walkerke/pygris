@@ -1,6 +1,7 @@
 import contextlib
 import ftplib
 import os
+import re  # noqa: F401
 import tempfile
 from urllib.parse import urlparse
 
