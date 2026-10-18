@@ -16,6 +16,14 @@ classifiers = [
 ]
 dynamic = ["dependencies"]
 
+[dependency-groups]
+docs = [
+    "mkdocs<2",
+    "mkdocs-material<10",
+    "mkdocs-jupyter<1",
+    "mkdocstrings[python]<2",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/walkerke/pygris"
 "Bug Tracker" = "https://github.com/walkerke/pygris/issues"
