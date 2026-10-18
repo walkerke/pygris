@@ -8,6 +8,7 @@ on:
       - "pygris/**"
       - "mkdocs.yml"
       - "requirements.txt"
+      - "pyproject.toml"
       - ".github/workflows/docs.yaml"
   workflow_dispatch:
 
@@ -24,14 +25,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-          pip install . mkdocs mkdocs-material mkdocs-jupyter "mkdocstrings[python]"
+        run: uv sync --group docs
 
       - name: Deploy to gh-pages
-        run: mkdocs gh-deploy --force
+        run: uv run mkdocs gh-deploy --force
