@@ -1,19 +1,18 @@
-from pygris.enumeration_units import counties, tracts, block_groups, blocks
+from pygris.enumeration_units import block_groups, blocks, counties, tracts
 
 
 # Helper function to get geometry (LODES-only for now)
 def _get_geometry(geography, state, year, cb, cache):
     if geography == "county":
-        geo = counties(cb = cb, state = state, year = year, cache = cache)
+        geo = counties(cb=cb, state=state, year=year, cache=cache)
     elif geography == "tract":
-        geo = tracts(cb = cb, state = state, year = year, cache = cache)
+        geo = tracts(cb=cb, state=state, year=year, cache=cache)
     elif geography == "block group":
-        geo = block_groups(cb = cb, state = state, year = year, cache = cache)
+        geo = block_groups(cb=cb, state=state, year=year, cache=cache)
     elif geography == "block":
-        geo = blocks(state = state, year = year, cache = cache)
-        geo = geo.rename({"GEOID20": "GEOID"}, axis = 1)
-    
+        geo = blocks(state=state, year=year, cache=cache)
+        geo = geo.rename({"GEOID20": "GEOID"}, axis=1)
 
-    geo_sub = geo.filter(['GEOID', 'geometry'])
+    geo_sub = geo.filter(["GEOID", "geometry"])
 
     return geo_sub
