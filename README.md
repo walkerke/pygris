@@ -36,3 +36,26 @@ Read the following articles for more information on how to use the package:
 * [Working with geometries in pygris](https://walker-data.com/pygris/02-geometries)
 * [Data utilities in pygris](https://walker-data.com/pygris/03-data-utilities)
 * [Geocoding and custom filters in pygris](https://walker-data.com/pygris/04-geocoding)
+
+## Contributing
+
+Contributions are welcome. This repository uses [pre-commit](https://pre-commit.com/) to run lint checks and code formatting (via [ruff](https://docs.astral.sh/ruff/)) on every commit, and the same checks run on every pull request in continuous integration.
+
+To set it up:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+The configured checks will then run automatically when you create a commit. To run them against all files in the repository manually:
+
+```bash
+pre-commit run --all-files
+```
+
+If a check fails:
+
+* Formatting checks (like `ruff-format`, `trailing-whitespace`, and `end-of-file-fixer`) will typically fix the files automatically. Add the modified files and create the commit again.
+* Check errors that don't modify files (like `ruff-check` findings) need to be fixed manually before re-committing. Some warnings can be suppressed with a `# noqa` comment where the rule is not applicable; see the [ruff rules documentation](https://docs.astral.sh/ruff/rules/) for details.
+* If a check fails, the same failure will show up as a failing check on your pull request, so it is easiest to resolve them locally before submitting.
