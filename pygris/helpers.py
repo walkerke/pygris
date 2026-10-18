@@ -142,7 +142,8 @@ def _load_tiger(url, cache=False, subset_by=None, protocol="http", timeout=1800)
         # If both HTTP and FTP failed, raise an error
         if not download_success:
             raise ValueError(
-                "Download failed with both HTTP and FTP; check your internet connection or the status of the Census Bureau website "
+                "Download failed with both HTTP and FTP; check your internet "
+                "connection or the status of the Census Bureau website "
                 "at https://www2.census.gov/geo/tiger/ or ftp://ftp2.census.gov/geo/tiger/."
             )
 
@@ -173,7 +174,7 @@ def _load_tiger(url, cache=False, subset_by=None, protocol="http", timeout=1800)
                     protocol=protocol,
                     timeout=timeout,
                 )
-            except:
+            except Exception:
                 pass
         raise e
 
@@ -313,6 +314,9 @@ def validate_county(state, county, quiet=False):
 
             return cty_code
         else:
-            msg = f"Your string matches {' and '.join(possible_counties)}. Please refine your selection."
+            msg = (
+                f"Your string matches {' and '.join(possible_counties)}. "
+                "Please refine your selection."
+            )
 
             raise ValueError(msg)

@@ -68,7 +68,9 @@ def congressional_districts(
 
     Notes
     ----------
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/congressional-dist.html for more information.
+    See
+    https://www.census.gov/programs-surveys/geography/guidance/geo-areas/congressional-dist.html
+    for more information.
 
 
     """
@@ -183,7 +185,7 @@ def congressional_districts(
             if state is not None:
                 if type(state) is not list:
                     state = [state]
-                valid_state = [validate_state(x) for x in state]
+                valid_state = [validate_state(x) for x in state]  # noqa: F841
                 cds = cds.query("STATEFP in @valid_state")
 
     return cds
@@ -210,7 +212,8 @@ def state_legislative_districts(
         will be downloaded when cb is True and the year is 2019 or later.
     house : str
         Specify here whether you want boundaries for the "upper" or "lower" house.
-        Note: Nebraska has a unicameral legislature, so only "upper" will work for Nebraska.
+        Note: Nebraska has a unicameral legislature, so only "upper" will work for
+        Nebraska.
     cb : bool
         If set to True, download a generalized (1:500k) cartographic boundary file.
         Defaults to False (the regular TIGER/Line file).
@@ -249,7 +252,9 @@ def state_legislative_districts(
 
     Notes
     ----------
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/state-legis-dist.html for more information.
+    See
+    https://www.census.gov/programs-surveys/geography/guidance/geo-areas/state-legis-dist.html
+    for more information.
 
 
     """
@@ -328,7 +333,8 @@ def voting_districts(
         Defaults to False (the regular TIGER/Line file).
     year : int
         The year of the TIGER/Line or cartographic boundary shapefile. Available years
-        for voting districts are 2020 (for 2020 districts) and 2012 (for 2010 districts).
+        for voting districts are 2020 (for 2020 districts) and 2012 (for 2010
+        districts).
     cache : bool
         If True, the function will download a Census shapefile to a cache directory
         on the user's computer for future access.  If False, the function will load
@@ -361,7 +367,8 @@ def voting_districts(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch14GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch14GARM.pdf for more
+    information.
 
 
     """
@@ -394,7 +401,7 @@ def voting_districts(
         else:
             if type(county) is not list:
                 county = [county]
-                valid_county = [validate_county(state, x) for x in county]
+                valid_county = [validate_county(state, x) for x in county]  # noqa: F841
                 vtds = vtds.query("COUNTYFP20 in @valid_county")
 
             return vtds

@@ -10,7 +10,7 @@ from pygris.geometry import _get_geometry
 
 
 def get_census(
-    dataset, variables, year=None, params={}, return_geoid=False, guess_dtypes=False
+    dataset, variables, year=None, params=None, return_geoid=False, guess_dtypes=False
 ):
     """
     Make a request to a US Census Bureau API endpoint
@@ -53,7 +53,8 @@ def get_census(
 
     Notes
     -------------
-    This function is a low-level interface to the Census APIs provided for convenience. For a full-featured, Pythonic
+    This function is a low-level interface to the Census APIs provided for convenience.
+    For a full-featured, Pythonic
     interface to the US Census Bureau APIs, I would recommend using the cenpy package (https://cenpy-devs.github.io/cenpy/index.html)
 
     `get_census()` is inspired by Hannah Recht's work on the censusapi R package (https://www.hrecht.com/censusapi/).
@@ -66,6 +67,8 @@ def get_census(
         variables = [variables]
 
     base = f"{endpoint}/{dataset}" if year is None else f"{endpoint}/{year}/{dataset}"
+
+    params = params or {}
 
     # get request must be <50, split it and run each chunk (adapted from cenpy)
     data = []
@@ -88,7 +91,8 @@ def get_census(
             # find the columns that are not in variables
             my_cols = list(df.columns)
 
-            # if 'state' is not in the list of columns, don't assemble the GEOID; too much
+            # if 'state' is not in the list of columns, don't assemble the GEOID; too
+            # much
             # ambiguity among possible combinations across the various endpoints
             if "state" not in my_cols:
                 raise ValueError(
@@ -104,19 +108,22 @@ def get_census(
             # Assemble the GEOID column, then remove its constituent parts
             df["GEOID"] = df[geoid_cols].agg("".join, axis=1)
 
-            df.drop(geoid_cols, axis=1, inplace=True)
+            df = df.drop(geoid_cols, axis=1)
 
         if guess_dtypes:
             num_list = []
-            # Iterate through the columns in variables and try to guess if they should be converted
+            # Iterate through the columns in variables and try to guess if they should
+            # be converted
             for v in chunk:
                 check = pd.to_numeric(df[v], errors="coerce")
-                # If the columns aren't fully null, convert to numeric, taking care of any oddities
-                if not pd.isnull(check.unique())[0]:
+                # If the columns aren't fully null, convert to numeric, taking care of
+                # any oddities
+                if not pd.isna(check.unique())[0]:
                     df[v] = check
                     num_list.append(v)
 
-            # If we are guessing numerics, we should convert NAs (negatives below -1 million)
+            # If we are guessing numerics, we should convert NAs (negatives below -1
+            # million)
             # to NaN. Users who want to keep the codes should keep as object and handle
             # themselves.
             df[num_list] = df[num_list].where(df[num_list] > -999999)
@@ -150,49 +157,65 @@ def get_lodes(
     cb=True,
 ):
     """
-    Get synthetic block-level data on workplace, residence, and origin-destination flows characteristics from the
+    Get synthetic block-level data on workplace, residence, and origin-destination flows
+    characteristics from the
     LEHD Origin-Destination Employment Statistics (LODES) dataset
 
     Parameters
     --------------
     state : str
-        The state postal code of your requested data. Please note that not all states are available
+        The state postal code of your requested data. Please note that not all states
+        are available
         in all years.
     year : int
-        The year of your requested data. LODES data go back to 2002, but not all datasets are available
+        The year of your requested data. LODES data go back to 2002, but not all
+        datasets are available
         for all years / for all states.
     version : str
-        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated at 2020 Census blocks.
-        "LODES7" is enumerated at 2010 Census blocks, but ends in 2019; "LODES5" is enumerated at 2000 Census
+        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated
+        at 2020 Census blocks.
+        "LODES7" is enumerated at 2010 Census blocks, but ends in 2019; "LODES5" is
+        enumerated at 2000 Census
         blocks, but ends in 2009.
     lodes_type : str
-        One of "od" (the default) for origin-destination flows, "wac" for workplace area characteristics,
+        One of "od" (the default) for origin-destination flows, "wac" for workplace area
+        characteristics,
         or "rac" for residence area characteristics.
     part : str
-        Only relevant for the "od" file.  "main" gives information on within-state residence to workplace flows.
-        "aux" gives information for residence to workplace flows from outside a given state.
+        Only relevant for the "od" file.  "main" gives information on within-state
+        residence to workplace flows.
+        "aux" gives information for residence to workplace flows from outside a given
+        state.
     job_type : str
-        The available job type breakdown; defaults to "JT00" for all jobs. Please review the LODES technical
+        The available job type breakdown; defaults to "JT00" for all jobs. Please review
+        the LODES technical
         documentation for a description of other options.
     segment : str
-        The workforce segment, relevant when lodes_type is "wac" or "rac". Defaults to "S000" for total jobs;
+        The workforce segment, relevant when lodes_type is "wac" or "rac". Defaults to
+        "S000" for total jobs;
         review the LODES technical documentation for a description of other options.
     agg_level : str
-        The level at which to aggregate the data.  Defaults to the Census block; other options include
+        The level at which to aggregate the data.  Defaults to the Census block; other
+        options include
         "county", "tract", and "block group".
     cache : bool
-        If True, downloads the requested LODES data to a cache directory on your computer and reads from
-        that directory if the file exists. Defaults to False, which will download the data by default.
+        If True, downloads the requested LODES data to a cache directory on your
+        computer and reads from
+        that directory if the file exists. Defaults to False, which will download the
+        data by default.
     return_geometry : bool
-        If True, get_lodes() will fetch the corresponding polygon geometry for shapes and return a GeoPandas
+        If True, get_lodes() will fetch the corresponding polygon geometry for shapes
+        and return a GeoPandas
         GeoDataFrame.  Defaults to False.
     return_lonlat : bool
         If True, columns representing the corresponding polygon centroid will be
     od_geometry : str
-        Whether to attach residential geometries ("home") or workplace geometries ("work").  Only specified
+        Whether to attach residential geometries ("home") or workplace geometries
+        ("work").  Only specified
         when lodes_type is "od".  Defaults to "home".
     cb : bool
-        If retrieving geometry, use the Cartographic Boundary shapefile (True) or the TIGER/Line shapefile (False).
+        If retrieving geometry, use the Cartographic Boundary shapefile (True) or the
+        TIGER/Line shapefile (False).
         Defaults to True for LODES8 and LODES7, and False for LODES5.
 
     Returns
@@ -202,10 +225,12 @@ def get_lodes(
 
     Notes
     ---------------
-    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for
+    Please review the LODES technical documentation at
+    https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for
     more information.
 
-    `get_lodes()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr) by
+    `get_lodes()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr)
+    by
     Jamaal Green, Dillon Mahmoudi, and Liming Wang.
 
 
@@ -267,7 +292,8 @@ def get_lodes(
             end = 12
         else:
             raise ValueError(
-                "Invalid agg_level; choose one of 'state', 'county', 'tract', or 'block group'."
+                "Invalid agg_level; choose one of 'state', 'county', 'tract', "
+                "or 'block group'."
             )
 
         if lodes_type == "wac":
@@ -444,7 +470,8 @@ def get_lodes(
 
 def get_xwalk(state, version="LODES8", cache=False):
     """
-    Get a Census block-to-parent geography crosswalk file for a given state and a given Census year (represented)
+    Get a Census block-to-parent geography crosswalk file for a given state and a given
+    Census year (represented)
     by a LODES version).
 
     Parameters
@@ -452,24 +479,30 @@ def get_xwalk(state, version="LODES8", cache=False):
     state : str
         The state postal code of your requested data.
     version : str
-        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated at 2020 Census blocks. Version 7
+        The LODES version to use.  Version 8 (the default, use "LODES8") is enumerated
+        at 2020 Census blocks. Version 7
         (use "LODES7") is enumerated at 2010 Census blocks.
     cache : bool
-        If True, downloads the requested LODES data to a cache directory on your computer and reads from
-        that directory if the file exists. Defaults to False, which will download the data by default.
+        If True, downloads the requested LODES data to a cache directory on your
+        computer and reads from
+        that directory if the file exists. Defaults to False, which will download the
+        data by default.
 
     Returns
     ---------------
-    A Pandas DataFrame representing the correspondence between Census blocks and a variety of parent geograpies
+    A Pandas DataFrame representing the correspondence between Census blocks and a
+    variety of parent geograpies
     in a given LODES dataset (and in turn a given Census year).
 
 
     Notes
     ---------------
-    Please review the LODES technical documentation at https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for
+    Please review the LODES technical documentation at
+    https://lehd.ces.census.gov/data/lodes/LODES8/LODESTechDoc8.0.pdf for
     more information.
 
-    `get_xwalk()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr) by
+    `get_xwalk()` is inspired by the lehdr R package (https://github.com/jamgreen/lehdr)
+    by
     Jamaal Green, Dillon Mahmoudi, and Liming Wang.
 
 

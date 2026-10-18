@@ -70,7 +70,8 @@ def counties(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more
+    information.
 
 
     """
@@ -110,7 +111,7 @@ def counties(
     if state is not None:
         if type(state) is not list:
             state = [state]
-        valid_state = [validate_state(x) for x in state]
+        valid_state = [validate_state(x) for x in state]  # noqa: F841
 
         if year == 1990:
             state_col = "ST"
@@ -141,10 +142,12 @@ def tracts(
     ----------
     state : str
         The state name, state abbreviation, or two-digit FIPS code of the desired state.
-        If None, Census tracts for the entire United States will be downloaded if available for that
+        If None, Census tracts for the entire United States will be downloaded if
+        available for that
         year / dataset combination.
     county : str
-        The county name or three-digit FIPS code of the desired county. If None, Census tracts
+        The county name or three-digit FIPS code of the desired county. If None, Census
+        tracts
         for the selected state will be downloaded.
     cb : bool
         If set to True, download a generalized (1:500k) cartographic boundary file.
@@ -179,7 +182,8 @@ def tracts(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more
+    information.
 
 
     """
@@ -225,7 +229,7 @@ def tracts(
     if county is not None:
         if type(county) is not list:
             county = [county]
-        valid_county = [validate_county(state, x) for x in county]
+        valid_county = [validate_county(state, x) for x in county]  # noqa: F841
 
         # Column name varies by year
         if year in [2000, 2008, 2009]:
@@ -260,7 +264,8 @@ def block_groups(
         If None, block groups for the entire United States will be downloaded if
         available for that year / dataset combination.
     county : str
-        The county name or three-digit FIPS code of the desired county. If None, block groups
+        The county name or three-digit FIPS code of the desired county. If None, block
+        groups
         for the selected state will be downloaded.
     cb : bool
         If set to True, download a generalized (1:500k) cartographic boundary file.
@@ -295,7 +300,8 @@ def block_groups(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch10GARM.pdf for more
+    information.
 
 
     """
@@ -338,7 +344,7 @@ def block_groups(
     if county is not None:
         if type(county) is not list:
             county = [county]
-        valid_county = [validate_county(state, x) for x in county]
+        valid_county = [validate_county(state, x) for x in county]  # noqa: F841
         bgs = bgs.query("COUNTYFP in @valid_county")
 
     return bgs
@@ -398,7 +404,9 @@ def school_districts(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information.
+    See
+    https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf
+    for more information.
 
 
     """
@@ -425,7 +433,8 @@ def school_districts(
         type = "scsd"
     else:
         raise ValueError(
-            "Invalid school district type.\nValid types are 'unified', 'elementary', and 'secondary'."
+            "Invalid school district type.\nValid types are 'unified', 'elementary', "
+            "and 'secondary'."
         )
 
     if cb is True:
@@ -468,7 +477,8 @@ def states(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch4GARM.pdf for more
+    information.
 
 
     """
@@ -557,10 +567,12 @@ def pumas(
 
     Notes
     ----------
-    2020 PUMAs are available with `year = 2022` and later.  PUMAs are not available in the 2020 and 2021 CB files;
+    2020 PUMAs are available with `year = 2022` and later.  PUMAs are not available in
+    the 2020 and 2021 CB files;
     use `year = 2019` or earlier to retrieve 2010 PUMAs.
 
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html for more information.
+    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/pumas.html
+    for more information.
 
 
     """
@@ -597,7 +609,8 @@ def pumas(
     if cb:
         if year in [2020, 2021]:
             raise ValueError(
-                "Cartographic boundary PUMAs are not yet available for years after 2019. Use the argument `year = 2019` instead to request your data."
+                "Cartographic boundary PUMAs are not yet available for years after "
+                "2019. Use the argument `year = 2019` instead to request your data."
             )
         else:
             if year == 2013:
@@ -666,7 +679,8 @@ def places(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch9GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch9GARM.pdf for more
+    information.
 
     """
 
@@ -677,11 +691,13 @@ def places(
     if state is None:
         if year < 2019:
             raise ValueError(
-                "Retrieving Census-designated data for the entire US only available for years on or after 2019"
+                "Retrieving Census-designated data for the entire US only available "
+                "for years on or after 2019"
             )
         elif not cb:
             raise ValueError(
-                "Retrieving Census-designated data for the entire US only available when cb is set to True"
+                "Retrieving Census-designated data for the entire US only available "
+                "when cb is set to True"
             )
         else:
             state = "us"
@@ -755,12 +771,15 @@ def zctas(
 
     Notes
     ----------
-    ZCTAs are approximations of zip codes, which themselves are not formally defined as areas
-    by the United States Postal Service.  In turn, not all zip codes will have corresponding
+    ZCTAs are approximations of zip codes, which themselves are not formally defined as
+    areas
+    by the United States Postal Service.  In turn, not all zip codes will have
+    corresponding
     ZCTAs.  For these reasons, ZCTAs are not recommended for spatial analysis and should
     be used with appropriate caution.
 
-    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html for more information.
+    See https://www.census.gov/programs-surveys/geography/guidance/geo-areas/zctas.html
+    for more information.
 
     """
 
@@ -776,7 +795,8 @@ def zctas(
 
     if year == 1990:
         raise ValueError(
-            "Zip Code Tabulation Areas are only available beginning with the 2000 Census."
+            "Zip Code Tabulation Areas are only available beginning with the "
+            "2000 Census."
         )
 
     if state is not None:
@@ -784,7 +804,8 @@ def zctas(
 
     if not cache:
         Warning(
-            "ZCTAs can take several minutes to download.\nTo cache the data and avoid re-downloading in future sessions, use the argument `cache = True`."
+            "ZCTAs can take several minutes to download.\nTo cache the data and avoid "
+            "re-downloading in future sessions, use the argument `cache = True`."
         )
 
     if cb:
@@ -802,7 +823,8 @@ def zctas(
         elif year > 2020:
             raise ValueError(
                 f"Cartographic boundary ZCTA files are only available for 2020. "
-                f"Use cb=False to get TIGER/Line ZCTAs for {year}, or set year=2020 for the CB file."
+                f"Use cb=False to get TIGER/Line ZCTAs for {year}, or set year=2020 "
+                f"for the CB file."
             )
         else:
             if year == 2013:
@@ -830,11 +852,12 @@ def zctas(
     if starts_with is not None:
         cols = zcta.columns.tolist()
 
-        zcta_ix = [i for i, j in enumerate(cols) if j.startswith("ZCTA")][0]
+        zcta_ix = next(i for i, j in enumerate(cols) if j.startswith("ZCTA"))
 
         zcta_col = cols[zcta_ix]
 
         if type(starts_with) is not list:
+            expr = "^" + starts_with
             zcta_sub = zcta.loc[zcta[zcta_col].str.startswith(expr)]
         else:
             tmp = ["^" + i for i in starts_with]
@@ -895,7 +918,9 @@ def blocks(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf for more information.
+    See
+    https://www2.census.gov/geo/pdfs/maps-data/data/tiger/tgrshp2020/TGRSHP2020_TechDoc.pdf
+    for more information.
 
 
     """
@@ -911,7 +936,9 @@ def blocks(
 
     if not cache:
         Warning(
-            "Block shapefiles can take several minutes to download.\nConsider using `cache = True` to store block shapefiles\nin a local cache and avoid future downloads."
+            "Block shapefiles can take several minutes to download.\nConsider using "
+            "`cache = True` to store block shapefiles\nin a local cache and avoid "
+            "future downloads."
         )
 
     if year in [2000, 2010]:
@@ -942,7 +969,7 @@ def blocks(
         else:
             if type(county) is not list:
                 county = [county]
-            valid_county = [validate_county(state, x) for x in county]
+            valid_county = [validate_county(state, x) for x in county]  # noqa: F841
             blks = blks.query("COUNTYFP10 in @valid_county")
 
     return blks
@@ -968,7 +995,8 @@ def county_subdivisions(
         If None, county subdivisions for the entire United States will be downloaded
         if available for that year / dataset combination.
     county : str
-        The county name or three-digit FIPS code of the desired county. If None, county subdivisions
+        The county name or three-digit FIPS code of the desired county. If None, county
+        subdivisions
         for the selected state will be downloaded.
     cb : bool
         If set to True, download a generalized (1:500k) cartographic boundary file.
@@ -1003,7 +1031,8 @@ def county_subdivisions(
 
     Notes
     ----------
-    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch8GARM.pdf for more information.
+    See https://www2.census.gov/geo/pdfs/reference/GARM/Ch8GARM.pdf for more
+    information.
 
 
     """
@@ -1034,7 +1063,7 @@ def county_subdivisions(
     if county is not None:
         if type(county) is not list:
             county = [county]
-        valid_county = [validate_county(state, x) for x in county]
+        valid_county = [validate_county(state, x) for x in county]  # noqa: F841
         cs = cs.query("COUNTYFP in @valid_county")
 
     return cs
