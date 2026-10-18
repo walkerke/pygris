@@ -18,10 +18,10 @@ dynamic = ["dependencies"]
 
 [dependency-groups]
 docs = [
-    "mkdocs",
-    "mkdocs-material",
-    "mkdocs-jupyter",
-    "mkdocstrings[python]",
+    "mkdocs<2",
+    "mkdocs-material<10",
+    "mkdocs-jupyter<1",
+    "mkdocstrings[python]<2",
 ]
 
 [project.urls]
