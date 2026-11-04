@@ -1,6 +1,7 @@
-from importlib import resources
+try:
+    from importlib.resources import files
+except ImportError:
+    from importlib_resources import files
 
 def fips_path():
-    with resources.path("pygris.internals", "fips_codes.csv") as path:
-        data_file_path = path
-        return data_file_path
+    return files("pygris.internals").joinpath("fips_codes.csv")
