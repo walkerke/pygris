@@ -1,3 +1,4 @@
 geopandas>=0.9
 requests
 platformdirs
+importlib-resources; python_version < "3.9"
